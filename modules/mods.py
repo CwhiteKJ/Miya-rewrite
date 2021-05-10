@@ -83,27 +83,25 @@ class Moderation(commands.Cog, name="모드"):
     @commands.command(name="슬로우", aliases=["슬로우모드"])
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
-    async def _slowmode(self, ctx, number: typing.Optional[int]):
+    async def _slowmode(self, ctx, number: str):
         """
         미야야 슬로우 < 1 ~ 21600 사이의 정수 / 끄기 >
 
 
         실행한 채널의 메시지 딜레이를 설정합니다.
         """
-        if number is None:
-            if ctx.message.content.split(" ")[2] != "끄기":
-                raise commands.BadArgument
-            else:
-                await ctx.channel.edit(slowmode_delay=0)
-                await ctx.reply(f":hourglass: 채널의 메시지 딜레이를 삭제했어요!")
+        if not number.isdecimal() and number != "끄기":
+            raise commands.BadArgument
+        elif number == "끄기":
+            await ctx.channel.edit(slowmode_delay=0)
+            await ctx.reply(f":hourglass: 채널의 메시지 딜레이를 삭제했어요!")
+        elif int(number) > 21600 or int(number) <= 0:
+            raise commands.BadArgument
         else:
-            if number > 21600 or number <= 0:
-                raise commands.BadArgument
-            else:
-                await ctx.channel.edit(slowmode_delay=number)
-                await ctx.reply(
-                    f":hourglass: 채널의 메시지 딜레이를 {number}초로 설정했어요!\n \n`채널 관리` 혹은 `메시지 관리` 권한을 가진 사람에게는 적용되지 않아요.\n채널의 메시지 딜레이를 취소하려면 `미야야 슬로우 끄기` 명령어를 사용해주세요."
-                )
+            await ctx.channel.edit(slowmode_delay=int(number))
+            await ctx.reply(
+                f":hourglass: 채널의 메시지 딜레이를 {number}초로 설정했어요!\n \n`채널 관리` 혹은 `메시지 관리` 권한을 가진 사람에게는 적용되지 않아요.\n채널의 메시지 딜레이를 취소하려면 `미야야 슬로우 끄기` 명령어를 사용해주세요."
+            )
 
     @commands.command(name="추방", aliases=["킥"])
     @commands.has_permissions(kick_members=True)
