@@ -4,8 +4,7 @@ import typing
 
 import discord
 from discord.ext import commands
-
-import utils
+import config
 
 locale.setlocale(locale.LC_ALL, "")
 
@@ -14,11 +13,32 @@ class Administration(commands.Cog, name="관리"):
     def __init__(self, miya):
         self.miya = miya
 
-    def is_manager():
-        mgr = commands.check(utils.get.mgr)
-        if mgr == False:
-            raise commands.NotOwner
-        return mgr
+    def is_manager(self):
+        return commands.check(self.miya.mgr)
+
+    @commands.command(name="점검")
+    @commands.is_owner()
+    async def _maintain(self, ctx, *, reason):
+        """
+        미야야 점검 < 사유 >
+
+
+        점검 모드를 활성화합니다. 점검 모드가 활성화된 동안은 관리자를 제외한 유저가 명령어를 사용할 수 없습니다.
+        """
+        msg = await ctx.send(f":grey_question: 정말로 점검 모드를 켜시겠어요?")
+        await msg.add_reaction("<:cs_yes:659355468715786262>")
+        await msg.add_reaction("<:cs_no:659355468816187405>")
+        def check(reaction, user):
+            return reaction.message.id == msg.id and user == ctx.author
+        try:
+            reaction, user = await self.miya.wait_for("reaction_add", timeout=30, check=check)
+        except:
+            await msg.clear_reaction()
+        else:
+            if str(reaction.emoji) == "<:cs_yes:659355468715786262>":
+                await msg.edit(content=f"<:cs_yes:659355468715786262> 점검 모드를 활성화했습니다.")
+                await self.miya.sql(f"UPDATE * SET")
+
 
     @commands.command(name="SQL")
     @commands.is_owner()
@@ -31,7 +51,7 @@ class Administration(commands.Cog, name="관리"):
         """
         if work == "fetch":
             a = ""
-            rows = await utils.data.fetch(sql)
+            rows = await self.miya.sql(0, sql)
             for row in rows:
                 a += f"{row}\n"
             if len(a) > 1900:
@@ -40,7 +60,7 @@ class Administration(commands.Cog, name="관리"):
             else:
                 await ctx.reply(a)
         elif work == "commit":
-            result = await utils.data.commit(sql)
+            result = await self.miya.sql(1, sql)
             await ctx.reply(result)
         else:
             raise commands.BadArgument
@@ -55,11 +75,11 @@ class Administration(commands.Cog, name="관리"):
         자동 차단 단어를 관리합니다.
         """
         if todo == "추가":
-            result = await utils.data.commit(
+            result = await self.miya.sql(1, 
                 f"INSERT INTO `forbidden`(`word`) VALUES('{word}')")
             if result == "SUCCESS":
                 await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
-                await utils.webhook.blacklist(
+                await self.miya.hook(config.Blacklist,
                     f"New Forbidden >\nAdmin - {ctx.author} ({ctx.author.id})\nPhrase - {word}",
                     "제한 기록",
                     self.miya.user.avatar_url,
@@ -67,11 +87,11 @@ class Administration(commands.Cog, name="관리"):
             else:
                 await ctx.message.add_reaction("<:cs_no:659355468816187405>")
         elif todo == "삭제":
-            result = await utils.data.commit(
+            result = await self.miya.sql(1, 
                 f"DELETE FROM `forbidden` WHERE `word` = '{word}'")
             if result == "SUCCESS":
                 await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
-                await utils.webhook.blacklist(
+                await self.miya.hook(config.Blacklist,
                     f"Removed Forbidden >\nAdmin - {ctx.author} ({ctx.author.id})\nPhrase - {word}",
                     "제한 기록",
                     self.miya.user.avatar_url,
@@ -96,15 +116,14 @@ class Administration(commands.Cog, name="관리"):
 
         ID를 통해 유저나 서버의 블랙리스트를 관리합니다.
         """
-        date = datetime.datetime.utcnow()
-        time = await utils.get.kor_time(date)
+        time = self.miya.localize(datetime.datetime.utcnow())
         if todo == "추가":
-            result = await utils.data.commit(
+            result = await self.miya.sql(1, 
                 f"INSERT INTO `blacklist`(`id`, `reason`, `admin`, `datetime`) VALUES('{id}', '{reason}', '{ctx.author.id}', '{time}')"
             )
             if result == "SUCCESS":
                 await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
-                await utils.webhook.blacklist(
+                await self.miya.hook(config.Blacklist,
                     f"New Block >\nVictim - {id}\nAdmin - {ctx.author} ({ctx.author.id})\nReason - {reason}",
                     "제한 기록",
                     self.miya.user.avatar_url,
@@ -112,11 +131,11 @@ class Administration(commands.Cog, name="관리"):
             else:
                 await ctx.message.add_reaction("<:cs_no:659355468816187405>")
         elif todo == "삭제":
-            result = await utils.data.commit(
+            result = await self.miya.sql(1, 
                 f"DELETE FROM `blacklist` WHERE `id` = '{id}'")
             if result == "SUCCESS":
                 await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
-                await utils.webhook.blacklist(
+                await self.miya.hook(config.Blacklist,
                     f"Removed Block >\nUnblocked - {id}\nAdmin - {ctx.author} ({ctx.author.id})",
                     "제한 기록",
                     self.miya.user.avatar_url,
