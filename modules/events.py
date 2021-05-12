@@ -8,6 +8,7 @@ import discord
 from discord.ext import commands
 
 import config
+import main
 
 locale.setlocale(locale.LC_ALL, "")
 
@@ -61,9 +62,9 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
             "manage_webhooks": "웹훅 관리하기",
             "manage_messages": "메시지 관리하기",
         }
-        if isinstance(error, self.Forbidden):
+        if isinstance(error, main.Forbidden):
             await ctx.reply(str(error), embed=error.embed)
-        elif isinstance(error, self.NoReg) or isinstance(error, self.Maintaining):
+        elif isinstance(error, main.NoReg) or isinstance(error, main.Maintaining):
             await ctx.reply(str(error))
         elif isinstance(error, discord.NotFound) or isinstance(
                 error, commands.NoPrivateMessage):
