@@ -11,7 +11,7 @@ import discord
 import koreanbots
 from discord.ext import commands
 
-import config
+from lib.utils import Get, sql
 
 locale.setlocale(locale.LC_ALL, "")
 
@@ -102,7 +102,7 @@ class General(commands.Cog, name="일반"):
         현재 한강의 수온을 출력합니다.
         """
         async with ctx.channel.typing():
-            result = await self.miya.hangang()
+            result = await Get.hangang()
             embed = discord.Embed(
                 description=f"현재 한강의 온도는 `{result[0]}`도에요!\n`측정: {result[1]}`",
                 color=0x5FE9FF,
@@ -159,9 +159,9 @@ class General(commands.Cog, name="일반"):
         async with ctx.channel.typing():
             embed = discord.Embed(title=f"{ctx.guild.name} 정보 및 미야 설정",
                                   color=0x5FE9FF)
-            guilds = await self.miya.sql(0,
+            guilds = await sql(0,
                 f"SELECT * FROM `guilds` WHERE `guild` = '{ctx.guild.id}'")
-            memberNoti = await self.miya.sql(0,
+            memberNoti = await sql(0,
                 f"SELECT * FROM `membernoti` WHERE `guild` = '{ctx.guild.id}'")
             muteRole = "설정되어 있지 않아요!"
             memberCh = "설정되어 있지 않아요!"
@@ -267,7 +267,7 @@ class General(commands.Cog, name="일반"):
         대한민국의 코로나 현황을 불러옵니다.
         """
         async with ctx.channel.typing():
-            _corona = await self.miya.corona()
+            _corona = await Get.corona()
             embed = discord.Embed(title="국내 코로나19 현황",
                                   description="질병관리청 집계 기준",
                                   color=0x5FE9FF)
