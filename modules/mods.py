@@ -1,11 +1,9 @@
-import asyncio
 import locale
 import typing
 
 import discord
 from discord.ext import commands
 
-from utils import data
 
 locale.setlocale(locale.LC_ALL, "")
 
@@ -28,7 +26,7 @@ class Moderation(commands.Cog, name="모드"):
 
         지정된 뮤트 역할을 유저에게 적용합니다. 뮤트 역할의 설정이 필요합니다.
         """
-        rows = await data.fetch(
+        rows = await self.miya.sql(0,
             f"SELECT * FROM `guilds` WHERE `guild` = '{ctx.guild.id}'")
         role = ctx.guild.get_role(int(rows[0][2]))
         if role is not None and role < ctx.guild.me.top_role:
@@ -64,7 +62,7 @@ class Moderation(commands.Cog, name="모드"):
 
         유저의 뮤트 상태를 해제합니다. 뮤트 역할의 설정이 필요합니다.
         """
-        rows = await data.fetch(
+        rows = await self.miya.sql(0,
             f"SELECT * FROM `guilds` WHERE `guild` = '{ctx.guild.id}'")
         role = ctx.guild.get_role(int(rows[0][2]))
         if role is not None and role < ctx.guild.me.top_role:

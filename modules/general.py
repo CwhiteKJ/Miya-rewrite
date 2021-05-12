@@ -3,18 +3,15 @@ import datetime
 import locale
 import random
 import typing
+import psutil
+import os
 
 import aiohttp
 import discord
 import koreanbots
 from discord.ext import commands
-from pytz import timezone
-from pytz import utc
 
-from lib import config
-from utils import data
-from utils import get
-from utils import webhook
+import config
 
 locale.setlocale(locale.LC_ALL, "")
 
@@ -22,42 +19,7 @@ locale.setlocale(locale.LC_ALL, "")
 class General(commands.Cog, name="일반"):
     def __init__(self, miya):
         self.miya = miya
-
-    @commands.command(name="도움말", aliases=["도움", "명령어"])
-    async def _help(self, ctx):
-        """
-        미야야 도움말
-
-
-        미야의 명령어 목록을 보여줍니다.
-        """
-        embed = discord.Embed(
-            title="미야 사용법",
-            description="< > 필드는 필수, [ ] 필드는 선택입니다. / 로 구분되어 있는 경우 하나만 선택하세요.",
-            color=0x5FE9FF,
-            timestamp=datetime.datetime.utcnow(),
-        )
-        embed.set_author(name="도움말", icon_url=self.miya.user.avatar_url)
-        for command in self.miya.commands:
-            private = ["관리", "데이터 관리", "Jishaku", "경제"]
-            if command.cog.qualified_name in private:
-                pass
-            else:
-                temp = command.help.split("\n")[3:]
-                local = ""
-                for arg in temp:
-                    local += f"{arg}\n"
-                embed.add_field(name=command.help.split("\n")[0],
-                                value=local,
-                                inline=False)
-        try:
-            await ctx.author.send(embed=embed)
-        except:
-            await ctx.send(
-                f"{ctx.author.mention} - 개인 정보 보호 설정에서 `서버 멤버에게 개인 메시지 받기` 항목을 활성화해주세요."
-            )
-        else:
-            await ctx.message.add_reaction("<:cs_sent:659355469684539402>")
+    
 
     @commands.command(name="핑")
     async def ping(self, ctx):
@@ -70,19 +32,15 @@ class General(commands.Cog, name="일반"):
         first_time = datetime.datetime.utcnow()
         m = await ctx.reply("지연 시간을 계산합니다...")
         last_time = datetime.datetime.utcnow()
-        ocha = str(last_time - first_time)[6:]
-        rows = await data.fetch(
-            f"SELECT * FROM `miya` WHERE `botId` = '{self.miya.user.id}'")
-        record = str(rows[0][1].split(".")[0])
-        start_time = datetime.datetime.strptime(record, "%Y-%m-%d %H:%M:%S")
-        uptime = datetime.datetime.utcnow() - start_time
+        msg_latency = round(float(str(last_time - first_time)[6:]) * 1000, 2)
+        uptime = datetime.datetime.utcnow() - datetime.fromtimestamp(psutil.Process(os.getpid()).create_time())
         shard = self.miya.get_shard(ctx.guild.shard_id)
-        latency = round(shard.latency * 1000, 2)
+        bot_latency = round(shard.latency * 1000, 2)
         embed = discord.Embed(color=0x5FE9FF,
                               timestamp=datetime.datetime.utcnow())
-        embed.add_field(name="API 지연 시간", value=f"{latency}ms", inline=False)
+        embed.add_field(name="API 지연 시간", value=f"{bot_latency}ms", inline=False)
         embed.add_field(name="메시지 수정 오차",
-                        value=f"{round(float(ocha) * 1000, 2)}ms",
+                        value=f"{msg_latency}ms",
                         inline=False)
         embed.add_field(name="구동 시간", value=str(uptime).split(".")[0])
         embed.set_thumbnail(
@@ -143,7 +101,7 @@ class General(commands.Cog, name="일반"):
         현재 한강의 수온을 출력합니다.
         """
         async with ctx.channel.typing():
-            result = await get.hangang()
+            result = await self.miya.hangang()
             embed = discord.Embed(
                 description=f"현재 한강의 온도는 `{result[0]}`도에요!\n`측정: {result[1]}`",
                 color=0x5FE9FF,
@@ -200,9 +158,9 @@ class General(commands.Cog, name="일반"):
         async with ctx.channel.typing():
             embed = discord.Embed(title=f"{ctx.guild.name} 정보 및 미야 설정",
                                   color=0x5FE9FF)
-            guilds = await data.fetch(
+            guilds = await self.miya.sql(0,
                 f"SELECT * FROM `guilds` WHERE `guild` = '{ctx.guild.id}'")
-            memberNoti = await data.fetch(
+            memberNoti = await self.miya.sql(0,
                 f"SELECT * FROM `membernoti` WHERE `guild` = '{ctx.guild.id}'")
             muteRole = "설정되어 있지 않아요!"
             memberCh = "설정되어 있지 않아요!"
@@ -256,7 +214,7 @@ class General(commands.Cog, name="일반"):
                 discord.VerificationLevel.extreme:
                 "**매우 높음**\n휴대폰 인증이 완료된 Discord 계정이어야 해요.",
             }
-            time = await get.kor_time(ctx.guild.created_at)
+            time = self.miya.localize(ctx.guild.created_at)
             embed.add_field(name="공지 채널",
                             value="📢 **서버의 연동 설정을 확인하세요!**",
                             inline=False)
@@ -308,7 +266,7 @@ class General(commands.Cog, name="일반"):
         대한민국의 코로나 현황을 불러옵니다.
         """
         async with ctx.channel.typing():
-            _corona = await get.corona()
+            _corona = await self.miya.corona()
             embed = discord.Embed(title="국내 코로나19 현황",
                                   description="질병관리청 집계 기준",
                                   color=0x5FE9FF)

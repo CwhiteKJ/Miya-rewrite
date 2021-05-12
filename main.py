@@ -238,8 +238,8 @@ def load_modules(miya):
         "modules.admin",
         "modules.mods",
         "modules.register",
-        "modules.log",
-        "modules.eco",
+#        "modules.log",
+#        "modules.eco",
         "jishaku",
     ]
 

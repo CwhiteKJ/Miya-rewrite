@@ -4,8 +4,6 @@ import locale
 import discord
 from discord.ext import commands
 
-from utils import data
-from utils import webhook
 
 locale.setlocale(locale.LC_ALL, "")
 
@@ -23,7 +21,7 @@ class DataManagement(commands.Cog, name="데이터 관리"):
 
         미야의 서비스에 이용 약관을 동의하고 등록합니다.
         """
-        rows = await data.fetch(
+        rows = await self.miya.sql(0,
             f"SELECT * FROM `users` WHERE `user` = '{ctx.author.id}'")
         if not rows:
             embed = discord.Embed(
@@ -56,7 +54,7 @@ class DataManagement(commands.Cog, name="데이터 관리"):
                     except:
                         pass
                     await register_msg.delete()
-                    result = await data.commit(
+                    result = await self.miya.sql(1,
                         f"INSERT INTO `users`(`user`, `money`) VALUES('{ctx.author.id}', '500')"
                     )
                     if result == "SUCCESS":
