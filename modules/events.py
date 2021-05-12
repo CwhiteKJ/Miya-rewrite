@@ -113,7 +113,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                     f"<:cs_console:659355468786958356> `{usage}`(이)가 올바른 명령어에요!"
                 )
         else:
-            await self.miya.hook(config.Teminal,
+            await self.miya.hook(config.Terminal,
                 f"Error >\nContent - {ctx.message.content}\nException - {error}",
                 "명령어 처리 기록",
                 self.miya.user.avatar_url,
@@ -144,7 +144,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        await self.miya.hook(config.Teminal,
+        await self.miya.hook(config.Terminal,
             f"Join >\nGuild - {guild.name} ({guild.id})",
             "서버 입퇴장 기록",
             self.miya.user.avatar_url,
@@ -161,7 +161,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                 f"INSERT INTO `membernoti`(`guild`, `channel`, `join_msg`, `remove_msg`) VALUES('{guild.id}', '1234', '{default_join_msg}', '{default_quit_msg}')"
             )
             if g_result == "SUCCESS" and m_result == "SUCCESS":
-                await self.miya.hook(config.Teminal,
+                await self.miya.hook(config.Terminal,
                     f"Registered >\nGuild - {guild.name} ({guild.id})",
                     "서버 등록 기록",
                     self.miya.user.avatar_url,
@@ -184,13 +184,13 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                         embed=embed,
                     )
                 except:
-                    await self.miya.hook(config.Teminal,
+                    await self.miya.hook(config.Terminal,
                         f"Owner DM Failed >\nGuild - {guild.name} ({guild.id})",
                         "서버 입퇴장 기록",
                         self.miya.user.avatar_url,
                     )
             else:
-                await self.miya.hook(config.Teminal,
+                await self.miya.hook(config.Terminal,
                     f"Register Failed >\nGuild - {guild.name} ({guild.id})\nguilds Table - {g_result}\nmemberNoti Table - {m_result}",
                     "서버 등록 기록",
                     self.miya.user.avatar_url,
@@ -231,7 +231,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                     embed=embed,
                 )
             except:
-                await self.miya.hook(config.Teminal,
+                await self.miya.hook(config.Terminal,
                     f"Owner DM Failed >\nGuild - {guild.name} ({guild.id})",
                     "서버 입퇴장 기록",
                     self.miya.user.avatar_url,
@@ -254,7 +254,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                     f"<:cs_notify:659355468904529920> {guild.owner.mention} https://discord.gg/tu4NKbEEnn",
                     embed=embed,
                 )
-            await self.miya.hook(config.Teminal,
+            await self.miya.hook(config.Terminal,
                 f"Blocked Guild >\nGuild - {guild.name} ({guild.id})\nOwner - {guild.owner} ({guild.owner.id})",
                 "서버 입퇴장 기록",
                 self.miya.user.avatar_url,
@@ -263,7 +263,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
-        await self.miya.hook(config.Teminal,
+        await self.miya.hook(config.Terminal,
             f"Quit >\nGuild - {guild.name} ({guild.id})",
             "서버 입퇴장 기록",
             self.miya.user.avatar_url,
@@ -288,7 +288,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                                           str(member.guild.member_count))
                         await channel.send(msg)
                     except Exception as e:
-                        await self.miya.hook(config.Teminal,
+                        await self.miya.hook(config.Terminal,
                             f"MemberNoti Failed >\nGuild - {member.guild.name} ({member.guild.id})\nException - {e}",
                             "유저 입퇴장 알림 기록",
                             self.miya.user.avatar_url,
@@ -313,7 +313,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                                           str(member.guild.member_count))
                         await channel.send(msg)
                     except Exception as e:
-                        await self.miya.hook(config.Teminal,
+                        await self.miya.hook(config.Terminal,
                             f"MemberNoti Failed >\nGuild - {member.guild.name} ({member.guild.id})\nException - {e}",
                             "유저 입퇴장 알림 기록",
                             self.miya.user.avatar_url,

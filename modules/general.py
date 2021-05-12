@@ -32,14 +32,15 @@ class General(commands.Cog, name="일반"):
         first_time = datetime.datetime.utcnow()
         m = await ctx.reply("지연 시간을 계산합니다...")
         last_time = datetime.datetime.utcnow()
-        msg_latency = round(float(str(last_time - first_time)[6:]) * 1000, 2)
+        asdf = str(last_time - first_time)[6:]
+        msg_latency = round(float(asdf) * 1000, 2)
         uptime = datetime.datetime.utcnow() - datetime.fromtimestamp(psutil.Process(os.getpid()).create_time())
         shard = self.miya.get_shard(ctx.guild.shard_id)
         bot_latency = round(shard.latency * 1000, 2)
         embed = discord.Embed(color=0x5FE9FF,
                               timestamp=datetime.datetime.utcnow())
         embed.add_field(name="API 지연 시간", value=f"{bot_latency}ms", inline=False)
-        embed.add_field(name="메시지 수정 오차",
+        embed.add_field(name="메시지 지연 시간",
                         value=f"{msg_latency}ms",
                         inline=False)
         embed.add_field(name="구동 시간", value=str(uptime).split(".")[0])
