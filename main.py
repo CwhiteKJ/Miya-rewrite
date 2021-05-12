@@ -17,16 +17,22 @@ from bs4 import BeautifulSoup
 locale.setlocale(locale.LC_ALL, "")
 
 class Forbidden(commands.CheckFailure):
-    def __init__(self, embed, ctx):
+    def __init__(self, embed):
         self.embed = embed
         super().__init__(
             "<a:ban_guy:761149578216603668> https://discord.gg/tu4NKbEEnn")
 
 
 class NoReg(commands.CheckFailure):
-    def __init__(self, ctx):
+    def __init__(self):
         super().__init__(
             "<:cs_id:659355469034422282> 미야와 대화하시려면, 먼저 이용 약관에 동의하셔야 해요.\n`미야야 가입` 명령어를 사용하셔서 가입하실 수 있어요!"
+        )
+
+class Maintaining(commands.CheckFailure):
+    def __init__(self, reason):
+        super().__init__(
+            f"<:cs_protect:659355468891947008> 지금은 미야와 대화하실 수 없어요.\n점검 중 : {reason}"
         )
 
 class Miya(commands.AutoShardedBot):
@@ -112,6 +118,9 @@ class Miya(commands.AutoShardedBot):
             )
             raise commands.NoPrivateMessage
 
+        maintain = await self.sql(0, f"SELECT * FROM `miya` WHERE `miya` = '{miya.user.id}'")
+        if maintain[0][1] == "true":
+            raise Maintaining(maintain[0][2])
         manage = await self.mgr(ctx)
         reason, admin, time, banned, forbidden = None, None, None, None, None
         words = await self.sql(0, "SELECT * FROM `forbidden`")
@@ -167,13 +176,13 @@ class Miya(commands.AutoShardedBot):
                     miya.user.avatar_url,
                 )
                 return True
-        elif not users and ctx.message.content.split(" ")[1] != "가입":
+        elif not users and ctx.command.name != "가입":
             await self.hook(config.Terminal,
                 f"Cancelled >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
                 "명령어 처리 기록",
                 miya.user.avatar_url,
             )
-            raise NoReg(ctx)
+            raise NoReg()
         else:
             await self.hook_send(
                 f"Processed >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
@@ -184,16 +193,16 @@ class Miya(commands.AutoShardedBot):
         embed = discord.Embed(
             title=f"이런, {ctx.author}님은 차단되셨어요.",
             description=f"""
-    차단에 관해서는 지원 서버를 방문해주세요.
-    사유 : {reason}
-    관리자 : {admin}
-    차단 시각 : {time}
+차단에 관해서는 지원 서버를 방문해주세요.
+사유 : {reason}
+관리자 : {admin}
+차단 시각 : {time}
             """,
             timestamp=datetime.datetime.utcnow(),
             color=0xFF3333,
         )
         embed.set_author(name="이용 제한", icon_url=miya.user.avatar_url)
-        raise Forbidden(embed, ctx)
+        raise Forbidden(embed)
 
 
 intents = discord.Intents(

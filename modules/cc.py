@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
 from lib import config
-from utils import exc, webhook, get
 import aiohttp
+import config
 
 def has_no_symbols():
     async def search(ctx):
@@ -19,7 +19,7 @@ class CC(commands.Cog, name="지식 및 배우기"):
     @commands.command(name="기억해", aliases=["배워"])
     @has_no_symbols()
     async def _learn(self, ctx, word, *, value):
-        await self.miya.sql(f"INSERT INTO `cc`(`word`, `description`, `user`) VALUES('{word}', '{value}', '{ctx.author.id}')", 1)
+        await self.miya.sql(1, f"INSERT INTO `cc`(`word`, `description`, `user`) VALUES('{word}', '{value}', '{ctx.author.id}')")
         await ctx.send(f"Successfully learned {word}\n{value}")
     
     @commands.Cog.listener()
@@ -28,26 +28,23 @@ class CC(commands.Cog, name="지식 및 배우기"):
               or isinstance(error, commands.NotOwner)
               or isinstance(error, commands.CheckFailure)):
             try:
-                p = await get.check(ctx, self.miya)
+                p = await self.miya.identify(ctx, self.miya)
             except Exception as e:
-                if isinstance(e, exc.Forbidden):
+                if isinstance(e, self.Forbidden):
                     await ctx.reply(str(e), embed=e.embed)
-                elif isinstance(e, exc.NoReg):
+                elif isinstance(e, self.NoReg):
                     await ctx.reply(str(e))
                 elif isinstance(e, commands.NoPrivateMessage):
                     return
             else:
                 if p is True:
-                    rows = None
                     response_msg = None
                     url = config.PPBRequest
                     headers = {
                         "Authorization": config.PPBToken,
                         "Content-Type": "application/json",
                     }
-                    query = ""
-                    for q in ctx.message.content.split(" ")[1:]:
-                        query += f"{q} "
+                    query = ctx.message.content.replace("미야야 ", "")
                     async with aiohttp.ClientSession() as cs:
                         async with cs.post(
                                 url,
@@ -59,7 +56,7 @@ class CC(commands.Cog, name="지식 및 배우기"):
                             response_msg = await r.json()
                     msg = response_msg["response"]["replies"][0]["text"]
                     if msg != "앗, 저 이번 달에 할 수 있는 말을 다 해버렸어요 🤐 다음 달까지 기다려주실거죠? ☹️":
-                        await webhook.terminal(
+                        await self.miya.hook(config.Terminal,
                             f"PINGPONG Builder >\nUser - {ctx.author} ({ctx.author.id})\nSent - {query}\nReceived - {msg}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
                             "명령어 처리 기록",
                             self.miya.user.avatar_url,
