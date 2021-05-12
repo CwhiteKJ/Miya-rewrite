@@ -18,7 +18,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
 
     @commands.Cog.listener()
     async def on_shard_disconnect(self, shard):
-        await self.miya.hook(config.Teminal,
+        await self.miya.hook(config.Terminal,
             f"Shard Disconnected >\nShard ID - #{shard}",
             "샤드 기록",
             self.miya.user.avatar_url,
@@ -26,7 +26,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
 
     @commands.Cog.listener()
     async def on_shard_resumed(self, shard):
-        await self.miya.hook(config.Teminal,f"Shard Resumed >\nShard ID - #{shard}",
+        await self.miya.hook(config.Terminal,f"Shard Resumed >\nShard ID - #{shard}",
                                "샤드 기록", self.miya.user.avatar_url)
         await self.miya.change_presence(
             status=discord.Status.idle,
@@ -36,7 +36,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
 
     @commands.Cog.listener()
     async def on_shard_connect(self, shard):
-        await self.miya.hook(config.Teminal,
+        await self.miya.hook(config.Terminal,
             f"Shard Connected >\nShard ID - #{shard}",
             "샤드 기록",
             self.miya.user.avatar_url,
@@ -63,7 +63,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
         }
         if isinstance(error, self.Forbidden):
             await ctx.reply(str(error), embed=error.embed)
-        elif isinstance(error, self.NoReg):
+        elif isinstance(error, self.NoReg) or isinstance(error, self.Maintaining):
             await ctx.reply(str(error))
         elif isinstance(error, discord.NotFound) or isinstance(
                 error, commands.NoPrivateMessage):

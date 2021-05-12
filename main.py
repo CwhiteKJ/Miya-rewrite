@@ -77,10 +77,6 @@ class Miya(commands.AutoShardedBot):
         except Exception as e:
             o.close()
             return e
-    
-    async def mgr(self, ctx):
-        rows = await self.sql(f"SELECT * FROM `users` WHERE `user` = {ctx.author.id}")
-        return rows[0][1] == "Maintainer" or rows[0][1] == "Administrator"
 
     def localize(self, time):
         KST = timezone("Asia/Seoul")
@@ -118,10 +114,13 @@ class Miya(commands.AutoShardedBot):
             )
             raise commands.NoPrivateMessage
 
+        manage = None
+        mrows = await self.sql(f"SELECT * FROM `users` WHERE `user` = {ctx.author.id}")
+        if mrows[0][1] == "Maintainer" or mrows[0][1] == "Administrator":
+            manage = True
         maintain = await self.sql(0, f"SELECT * FROM `miya` WHERE `miya` = '{miya.user.id}'")
-        if maintain[0][1] == "true":
+        if maintain[0][1] == "true" and not manage:
             raise Maintaining(maintain[0][2])
-        manage = await self.mgr(ctx)
         reason, admin, time, banned, forbidden = None, None, None, None, None
         words = await self.sql(0, "SELECT * FROM `forbidden`")
         for word in words:
@@ -255,7 +254,7 @@ def load_modules(miya):
 
 @miya.check
 async def process(ctx):
-    p = await miya.identify(ctx)
+    p = await miya.identify(ctx, ctx.bot)
     return p
 
 

@@ -13,8 +13,6 @@ class Administration(commands.Cog, name="관리"):
     def __init__(self, miya):
         self.miya = miya
 
-    def is_manager(self):
-        return commands.check(self.miya.mgr)
 
     @commands.command(name="점검")
     @commands.is_owner()
@@ -66,7 +64,7 @@ class Administration(commands.Cog, name="관리"):
             raise commands.BadArgument
 
     @commands.command(name="제한")
-    @is_manager()
+    @commands.check(self.miya.mgr)
     async def _black_word(self, ctx, todo, *, word):
         """
         미야야 제한 < 추가 / 삭제 > < 단어 >
