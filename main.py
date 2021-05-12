@@ -183,7 +183,7 @@ class Miya(commands.AutoShardedBot):
             )
             raise NoReg()
         else:
-            await self.hook_send(
+            await self.hook(
                 f"Processed >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
                 "명령어 처리 기록",
                 miya.user.avatar_url,
