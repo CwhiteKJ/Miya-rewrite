@@ -115,7 +115,7 @@ class Miya(commands.AutoShardedBot):
             raise commands.NoPrivateMessage
 
         manage = None
-        mrows = await self.sql(f"SELECT * FROM `users` WHERE `user` = {ctx.author.id}")
+        mrows = await self.sql(0, f"SELECT * FROM `users` WHERE `user` = {ctx.author.id}")
         if mrows[0][1] == "Maintainer" or mrows[0][1] == "Administrator":
             manage = True
         maintain = await self.sql(0, f"SELECT * FROM `miya` WHERE `miya` = '{miya.user.id}'")
