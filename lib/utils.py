@@ -44,10 +44,10 @@ async def sql(type: int, sql: str):
             o.close()
             return rows
         o.close()
-        return "processed"
+        return "SUCCESS"
     except Exception as e:
         o.close()
-        return e
+        raise e
 
 class Hook():
     def __init__(self, *args, **kwargs):

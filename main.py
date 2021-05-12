@@ -62,6 +62,7 @@ def load_modules(miya):
         "modules.register",
 #        "modules.log",
 #        "modules.eco",
+#        "modules.cc",
         "jishaku",
     ]
 

@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from lib import config
 import aiohttp
-import config
+from lib.utils import sql, Check, Forbidden, NoReg, Maintaining
 
 def has_no_symbols():
     async def search(ctx):
@@ -19,7 +19,7 @@ class CC(commands.Cog, name="지식 및 배우기"):
     @commands.command(name="기억해", aliases=["배워"])
     @has_no_symbols()
     async def _learn(self, ctx, word, *, value):
-        await self.miya.sql(1, f"INSERT INTO `cc`(`word`, `description`, `user`) VALUES('{word}', '{value}', '{ctx.author.id}')")
+        await sql(1, f"INSERT INTO `cc`(`word`, `description`, `user`) VALUES('{word}', '{value}', '{ctx.author.id}')")
         await ctx.send(f"Successfully learned {word}\n{value}")
     
     @commands.Cog.listener()
@@ -28,11 +28,11 @@ class CC(commands.Cog, name="지식 및 배우기"):
               or isinstance(error, commands.NotOwner)
               or isinstance(error, commands.CheckFailure)):
             try:
-                p = await self.miya.identify(ctx, self.miya)
+                p = await Check.identify(ctx)
             except Exception as e:
-                if isinstance(e, self.Forbidden):
+                if isinstance(e, Forbidden):
                     await ctx.reply(str(e), embed=e.embed)
-                elif isinstance(e, self.NoReg):
+                elif isinstance(e, NoReg) or isinstance(e, Maintaining):
                     await ctx.reply(str(e))
                 elif isinstance(e, commands.NoPrivateMessage):
                     return

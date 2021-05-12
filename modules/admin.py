@@ -39,12 +39,12 @@ class Administration(commands.Cog, name="관리"):
             if str(reaction.emoji) == "<:cs_yes:659355468715786262>":
                 operation = 'true'
                 await msg.edit(content=f"<:cs_yes:659355468715786262> 점검 모드를 활성화했습니다.")
-                await sql(f"UPDATE * SET `maintained` = '{operation}'")
-                await sql(f"UPDATE * SET `mtr` = '{reason}'")
+                await sql(1, f"UPDATE * SET `maintained` = '{operation}'")
+                await sql(1, f"UPDATE * SET `mtr` = '{reason}'")
             else:
                 operation = 'false'
                 await msg.edit(content=f"<:cs_yes:659355468715786262> 점검 모드를 비활성화했습니다.")
-                await sql(f"UPDATE * SET `maintained` = '{operation}'")
+                await sql(1, f"UPDATE * SET `maintained` = '{operation}'")
 
 
     @commands.command(name="SQL")

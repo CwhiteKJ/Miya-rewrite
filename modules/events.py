@@ -6,9 +6,7 @@ import locale
 import aiohttp
 import discord
 from discord.ext import commands
-
-import config
-import main
+from lib.utils import Hook, NoReg, Maintaining, Forbidden, sql
 
 locale.setlocale(locale.LC_ALL, "")
 
@@ -19,7 +17,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
 
     @commands.Cog.listener()
     async def on_shard_disconnect(self, shard):
-        await self.miya.hook(config.Terminal,
+        await Hook.terminal(0,
             f"Shard Disconnected >\nShard ID - #{shard}",
             "샤드 기록",
             self.miya.user.avatar_url,
@@ -27,7 +25,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
 
     @commands.Cog.listener()
     async def on_shard_resumed(self, shard):
-        await self.miya.hook(config.Terminal,f"Shard Resumed >\nShard ID - #{shard}",
+        await Hook.terminal(0,f"Shard Resumed >\nShard ID - #{shard}",
                                "샤드 기록", self.miya.user.avatar_url)
         await self.miya.change_presence(
             status=discord.Status.idle,
@@ -37,7 +35,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
 
     @commands.Cog.listener()
     async def on_shard_connect(self, shard):
-        await self.miya.hook(config.Terminal,
+        await Hook.terminal(0,
             f"Shard Connected >\nShard ID - #{shard}",
             "샤드 기록",
             self.miya.user.avatar_url,
@@ -62,9 +60,12 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
             "manage_webhooks": "웹훅 관리하기",
             "manage_messages": "메시지 관리하기",
         }
-        if isinstance(error, main.Forbidden):
+        if (isinstance(error, commands.CommandNotFound)
+              or isinstance(error, commands.NotOwner)):
+            return
+        if isinstance(error, Forbidden):
             await ctx.reply(str(error), embed=error.embed)
-        elif isinstance(error, main.NoReg) or isinstance(error, main.Maintaining):
+        elif isinstance(error, NoReg) or isinstance(error, Maintaining):
             await ctx.reply(str(error))
         elif isinstance(error, discord.NotFound) or isinstance(
                 error, commands.NoPrivateMessage):
@@ -113,7 +114,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                     f"<:cs_console:659355468786958356> `{usage}`(이)가 올바른 명령어에요!"
                 )
         else:
-            await self.miya.hook(config.Terminal,
+            await Hook.terminal(0,
                 f"Error >\nContent - {ctx.message.content}\nException - {error}",
                 "명령어 처리 기록",
                 self.miya.user.avatar_url,
@@ -132,7 +133,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
 
         if ("discord.gg" in msg.content or "discord.com/invite" in msg.content
                 or "discordapp.com/invite" in msg.content):
-            rows = await self.miya.sql(0, 
+            rows = await sql(0, 
                 f"SELECT * FROM `guilds` WHERE `guild` = '{msg.guild.id}'")
             if rows:
                 if rows[0][3] == "true":
@@ -144,24 +145,24 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        await self.miya.hook(config.Terminal,
+        await Hook.terminal(0,
             f"Join >\nGuild - {guild.name} ({guild.id})",
             "서버 입퇴장 기록",
             self.miya.user.avatar_url,
         )
-        grows = await self.miya.sql(0, 
+        grows = await sql(0, 
             f"SELECT * FROM `guilds` WHERE `guild` = '{guild.id}'")
         if not grows:
-            g_result = await self.miya.sql(1, 
+            g_result = await sql(1, 
                 f"INSERT INTO `guilds`(`guild`, `eventLog`, `muteRole`, `linkFiltering`, `warn_kick`) VALUES('{guild.id}', '1234', '1234', 'false', '0')"
             )
             default_join_msg = "{member}님 **{guild}**에 오신 것을 환영해요! 현재 인원 : {count}명"
             default_quit_msg = "{member}님 안녕히 가세요.. 현재 인원 : {count}명"
-            m_result = await self.miya.sql(1, 
+            m_result = await sql(1, 
                 f"INSERT INTO `membernoti`(`guild`, `channel`, `join_msg`, `remove_msg`) VALUES('{guild.id}', '1234', '{default_join_msg}', '{default_quit_msg}')"
             )
             if g_result == "SUCCESS" and m_result == "SUCCESS":
-                await self.miya.hook(config.Terminal,
+                await Hook.terminal(0,
                     f"Registered >\nGuild - {guild.name} ({guild.id})",
                     "서버 등록 기록",
                     self.miya.user.avatar_url,
@@ -184,13 +185,13 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                         embed=embed,
                     )
                 except:
-                    await self.miya.hook(config.Terminal,
+                    await Hook.terminal(0,
                         f"Owner DM Failed >\nGuild - {guild.name} ({guild.id})",
                         "서버 입퇴장 기록",
                         self.miya.user.avatar_url,
                     )
             else:
-                await self.miya.hook(config.Terminal,
+                await Hook.terminal(0,
                     f"Register Failed >\nGuild - {guild.name} ({guild.id})\nguilds Table - {g_result}\nmemberNoti Table - {m_result}",
                     "서버 등록 기록",
                     self.miya.user.avatar_url,
@@ -198,9 +199,9 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                 await guild.text_channels[0].send(
                     f"<:cs_stop:665173353874587678> {guild.owner.mention} 미야 설정이 정상적으로 완료되지 않았습니다.\n자세한 내용은 https://discord.gg/tu4NKbEEnn 으로 문의해주세요."
                 )
-        rows = await self.miya.sql(0, 
+        rows = await sql(0, 
             f"SELECT * FROM `blacklist` WHERE `id` = '{guild.id}'")
-        rows2 = await self.miya.sql(0, 
+        rows2 = await sql(0, 
             f"SELECT * FROM `blacklist` WHERE `id` = '{guild.owner.id}'")
         if rows or rows2:
             try:
@@ -231,7 +232,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                     embed=embed,
                 )
             except:
-                await self.miya.hook(config.Terminal,
+                await Hook.terminal(0,
                     f"Owner DM Failed >\nGuild - {guild.name} ({guild.id})",
                     "서버 입퇴장 기록",
                     self.miya.user.avatar_url,
@@ -254,7 +255,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                     f"<:cs_notify:659355468904529920> {guild.owner.mention} https://discord.gg/tu4NKbEEnn",
                     embed=embed,
                 )
-            await self.miya.hook(config.Terminal,
+            await Hook.terminal(0,
                 f"Blocked Guild >\nGuild - {guild.name} ({guild.id})\nOwner - {guild.owner} ({guild.owner.id})",
                 "서버 입퇴장 기록",
                 self.miya.user.avatar_url,
@@ -263,7 +264,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
-        await self.miya.hook(config.Terminal,
+        await Hook.terminal(0,
             f"Quit >\nGuild - {guild.name} ({guild.id})",
             "서버 입퇴장 기록",
             self.miya.user.avatar_url,
@@ -272,7 +273,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         if member.bot == False:
-            rows = await self.miya.sql(0, 
+            rows = await sql(0, 
                 f"SELECT * FROM `membernoti` WHERE `guild` = '{member.guild.id}'"
             )
             if not rows:
@@ -288,7 +289,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                                           str(member.guild.member_count))
                         await channel.send(msg)
                     except Exception as e:
-                        await self.miya.hook(config.Terminal,
+                        await Hook.terminal(0,
                             f"MemberNoti Failed >\nGuild - {member.guild.name} ({member.guild.id})\nException - {e}",
                             "유저 입퇴장 알림 기록",
                             self.miya.user.avatar_url,
@@ -297,7 +298,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         if member.bot == False:
-            rows = await self.miya.sql(0, 
+            rows = await sql(0, 
                 f"SELECT * FROM `membernoti` WHERE `guild` = '{member.guild.id}'"
             )
             if not rows:
@@ -313,7 +314,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                                           str(member.guild.member_count))
                         await channel.send(msg)
                     except Exception as e:
-                        await self.miya.hook(config.Terminal,
+                        await Hook.terminal(0,
                             f"MemberNoti Failed >\nGuild - {member.guild.name} ({member.guild.id})\nException - {e}",
                             "유저 입퇴장 알림 기록",
                             self.miya.user.avatar_url,
