@@ -54,7 +54,7 @@ class General(commands.Cog, name="일반"):
             for command in self.miya.walk_commands():
                 if not command.cog_name and not command.hidden:
                     temp = command.help.split("\n")
-                    commands_desc += f"{temp[0]} - {temp[2]}\n"
+                    commands_desc += f"{temp[0]} - {temp[3]}\n"
             if commands_desc:
                 embed.add_field(name="확장에 포함되지 않는 명령어 목록",
                                 value=commands_desc,
@@ -77,7 +77,7 @@ class General(commands.Cog, name="일반"):
                         if not command.hidden:
                             embed.add_field(
                                 name=command.help.split("\n")[0],
-                                value=command.help.split("\n")[2],
+                                value=command.help.split("\n")[3],
                                 inline=False,
                             )
                     if len(embed.fields) < 1:
