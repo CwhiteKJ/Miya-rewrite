@@ -122,11 +122,23 @@ class Check:
         self.get = Get()
 
     async def mgr(self, ctx):
+        if commands.is_owner():
+            return True
         mrows = await sql(
             0, f"SELECT * FROM `users` WHERE `user` = {ctx.author.id}")
         if not mrows:
             return False
         return mrows[0][1] == "Maintainer" or mrows[0][1] == "Administrator"
+
+    async def owner(self, ctx):
+        if commands.is_owner():
+            return True
+        mrows = await sql(
+            0, f"SELECT * FROM `users` WHERE `user` = {ctx.author.id}")
+        if not mrows:
+            return False
+        return mrows[0][1] == "Administrator"
+
 
     async def identify(self, ctx):
         if ctx.channel.type == discord.ChannelType.private:
