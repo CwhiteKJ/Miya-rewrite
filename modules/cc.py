@@ -25,7 +25,7 @@ def has_no_symbols():
         if ("\\" not in ctx.message.content and '"' not in ctx.message.content
                 and "'" not in ctx.message.content):
             return True
-        return False
+        raise commands.BadArgument
 
     return commands.check(search)
 

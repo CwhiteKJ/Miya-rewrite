@@ -100,7 +100,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                     query2.lower()
                     embed = None
                     rows = await sql(
-                        0, f"SELECT * FROM `cc` WHERE `word` = '{query2}'")
+                        0, f"SELECT * FROM `cc` WHERE `word` = '{query2}' AND `disabled` = 'false'")
                     if not rows:
                         async with aiohttp.ClientSession() as cs:
                             async with cs.post(
