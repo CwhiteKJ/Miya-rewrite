@@ -1,4 +1,5 @@
 import datetime
+import typing
 
 import aiohttp
 import aiomysql
@@ -142,7 +143,7 @@ class Blacklisting:
             await sql(1, f"INSERT INTO `forbidden`(`word`) VALUES('{word}')")
             await Hook.terminal(
                 1,
-                f"New Forbidden >\nAdmin - {admin} ({admin.id})\nPhrase - {word}",
+                f"New Forbidden >\nAdmin - {ctx.author} ({ctx.author.id})\nPhrase - {word}",
                 "제한 기록",
                 ctx.bot.user.avatar_url,
             )
@@ -150,7 +151,7 @@ class Blacklisting:
             await sql(1, f"DELETE FROM `forbidden` WHERE `word` = '{word}'")
             await Hook.terminal(
                 1,
-                f"Removed Forbidden >\nAdmin - {admin} ({admin.id})\nPhrase - {word}",
+                f"Removed Forbidden >\nAdmin - {ctx.author} ({ctx.author.id})\nPhrase - {word}",
                 "제한 기록",
                 ctx.bot.user.avatar_url,
             )
