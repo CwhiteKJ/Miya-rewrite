@@ -161,8 +161,18 @@ class Settings(commands.Cog, name="설정"):
                     f"UPDATE `guilds` SET `eventLog` = '{webhook.url}' WHERE `guild` = '{ctx.guild.id}'",
                 )
                 await ctx.reply(
-                    f"<:cs_settings:659355468992610304> {channel.mention} 채널에 미야 지원 서버의 공지 채널을 팔로우했어요."
+                    f"<:cs_settings:659355468992610304> {channel.mention} 채널에 미야 기록용 웹훅을 새롭게 추가했어요."
                 )
+            elif what == "입퇴장":
+                await sql(
+                    1,
+                    f"UPDATE `membernoti` SET `channel` = '{channel.id}' WHERE `guild` = '{ctx.guild.id}'",
+                )
+                await ctx.reply(
+                    f"<:cs_settings:659355468992610304> {channel.mention} 채널로 멤버 입퇴장 기록 채널을 변경했어요."
+                )
+            else:
+                raise commands.BadArgument
 
     @commands.command(name="링크차단")
     @commands.has_permissions(manage_guild=True)
