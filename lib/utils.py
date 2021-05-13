@@ -30,7 +30,7 @@ class NoReg(commands.CheckFailure):
 class Maintaining(commands.CheckFailure):
     def __init__(self, reason):
         super().__init__(
-            f"<:cs_protect:659355468891947008> 지금은 미야와 대화하실 수 없어요.\n```점검 중 : {reason}```"
+            f"<:cs_protect:659355468891947008> 지금은 미야와 대화하실 수 없어요.\n```{reason}```"
         )
 
 async def sql(type: int, sql: str):
@@ -57,9 +57,6 @@ async def sql(type: int, sql: str):
 
 
 class Hook:
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     async def terminal(self, target, content, name, avatar):
         url = None
         if target == 1:
@@ -83,9 +80,6 @@ class Hook:
 
 
 class Get:
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def localize(self, time):
         KST = timezone("Asia/Seoul")
         abc = utc.localize(time).astimezone(KST)
@@ -115,8 +109,7 @@ class Get:
 
 
 class Blacklisting:
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
         self.get = Get()
    
     async def user(self, task, id, admin, *, reason: typing.Optional[str]):
@@ -168,8 +161,7 @@ class Blacklisting:
 
 
 class Check:
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
         self.hook = Hook()
         self.get = Get()
         self.black = Blacklisting()
@@ -187,7 +179,8 @@ class Check:
         if user[0][1] == "Blocked":
             rows = await sql(
                 0, f"SELECT * FROM `blacklist` WHERE `id` = '{ctx.author.id}'")
-            {rows[0][1]ctx.bot.get_user(int(rows[0][2]))rows[0][3]
+            return {"Blocked": True, "Reason": rows[0][1], "Admin": ctx.bot.get_user(int(rows[0][2])), "Time": rows[0][3]}
+        return {"Blocked": False}
 
     async def mgr(self, ctx):
         if commands.is_owner():
