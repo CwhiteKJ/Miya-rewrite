@@ -33,7 +33,7 @@ class Administration(commands.Cog, name="관리"):
         가르쳐진 지식을 비활성화합니다.
         """
         await sql(
-            1, f"UPDATE `cc` SET `disabled` = 'true` WHERE `no` = '{number}'")
+            1, f"UPDATE `cc` SET `disabled` = 'true' WHERE `no` = '{number}'")
         await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
 
     @commands.group(name="조회")
