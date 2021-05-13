@@ -48,7 +48,6 @@ class General(commands.Cog, name="일반"):
                 cogs_desc += f"`{cog}` - {self.bot.cogs[cog].__doc__}\n"
             embed.add_field(name="확장 목록", value=cogs_desc, inline=False)
             commands_desc = ""
-            # if cog not in a cog # listing command if cog name is None and command isn't hidden
             for command in self.bot.walk_commands():
                 if not command.cog_name and not command.hidden:
                     temp = command.help.split("\n")
