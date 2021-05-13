@@ -36,7 +36,7 @@ class General(commands.Cog, name="일반"):
         last_time = datetime.datetime.utcnow()
         asdf = str(last_time - first_time)[6:]
         msg_latency = round(float(asdf) * 1000, 2)
-        uptime = datetime.datetime.utcnow() - datetime.fromtimestamp(psutil.Process(os.getpid()).create_time())
+        uptime = datetime.datetime.utcnow() - datetime.datetime.fromtimestamp(psutil.Process(os.getpid()).create_time())
         shard = self.miya.get_shard(ctx.guild.shard_id)
         bot_latency = round(shard.latency * 1000, 2)
         embed = discord.Embed(color=0x5FE9FF,
