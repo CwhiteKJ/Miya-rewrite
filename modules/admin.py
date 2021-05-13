@@ -25,6 +25,12 @@ class Administration(commands.Cog, name="관리"):
     @commands.command(name="비활성화")
     @is_manager()
     async def _remove(self, ctx, number: int):
+        """
+        미야야 비활성화 < 번호 >
+
+
+        가르쳐진 지식을 비활성화합니다.
+        """
         await sql(
             1, f"UPDATE `cc` SET `disabled` = 'true` WHERE `no` = '{number}'")
         await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
