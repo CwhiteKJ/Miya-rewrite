@@ -44,11 +44,11 @@ class General(commands.Cog, name="일반"):
                 timestamp=datetime.datetime.utcnow(),
             )
             cogs_desc = ""
-            for cog in self.bot.cogs:
-                cogs_desc += f"`{cog}` - {self.bot.cogs[cog].__doc__}\n"
+            for cog in self.miya.cogs:
+                cogs_desc += f"`{cog}` - {self.miya.cogs[cog].__doc__}\n"
             embed.add_field(name="확장 목록", value=cogs_desc, inline=False)
             commands_desc = ""
-            for command in self.bot.walk_commands():
+            for command in self.miya.walk_commands():
                 if not command.cog_name and not command.hidden:
                     temp = command.help.split("\n")
                     commands_desc += f"{temp[0]} - {temp[2]}\n"
@@ -62,11 +62,11 @@ class General(commands.Cog, name="일반"):
                 f"Powered by Team Urtica with ❤ in discord.py\n봇에 대한 정보는 `미야야 미야` 명령어를 참고하세요!",
             )
         else:
-            for cog in self.bot.cogs:
+            for cog in self.miya.cogs:
                 if cog.lower() == input.lower():
                     embed = discord.Embed(
                         title=f"{cog} 확장의 명령어",
-                        description=self.bot.cogs[cog].__doc__,
+                        description=self.miya.cogs[cog].__doc__,
                         color=0x5FE9FF,
                         timestamp=datetime.datetime.utcnow(),
                     )
