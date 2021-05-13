@@ -87,6 +87,7 @@ class General(commands.Cog, name="일반"):
                             color=0xFF3333,
                             timestamp=datetime.datetime.utcnow(),
                         )
+                    break
                 else:
                     embed = discord.Embed(
                         title="음, 무엇을 말하시는 건지 모르겠네요.",
