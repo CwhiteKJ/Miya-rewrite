@@ -11,6 +11,7 @@ locale.setlocale(locale.LC_ALL, "")
 
 Hook = utils.Hook()
 Check = utils.Check()
+Get = utils.Get()
 
 class Administration(commands.Cog, name="관리"):
     def __init__(self, miya):
@@ -126,7 +127,7 @@ class Administration(commands.Cog, name="관리"):
 
         ID를 통해 유저나 서버의 블랙리스트를 관리합니다.
         """
-        time = self.miya.localize(datetime.datetime.utcnow())
+        time = Get.localize(datetime.datetime.utcnow())
         if todo == "추가":
             result = await sql(1, 
                 f"INSERT INTO `blacklist`(`id`, `reason`, `admin`, `datetime`) VALUES('{id}', '{reason}', '{ctx.author.id}', '{time}')"

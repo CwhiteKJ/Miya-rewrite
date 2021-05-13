@@ -217,7 +217,7 @@ class General(commands.Cog, name="일반"):
                 discord.VerificationLevel.extreme:
                 "**매우 높음**\n휴대폰 인증이 완료된 Discord 계정이어야 해요.",
             }
-            time = self.miya.localize(ctx.guild.created_at)
+            time = Get.localize(ctx.guild.created_at)
             embed.add_field(name="공지 채널",
                             value="📢 **서버의 연동 설정을 확인하세요!**",
                             inline=False)

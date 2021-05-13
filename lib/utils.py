@@ -105,6 +105,7 @@ class Check():
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.hook = Hook()
+        self.get = Get()
 
     async def mgr(self, ctx):
         mrows = await sql(0, f"SELECT * FROM `users` WHERE `user` = {ctx.author.id}")
@@ -163,7 +164,7 @@ class Check():
             if manage is not True:
                 reason = f"부적절한 언행 **[Auto]** - {banned}"
                 admin = ctx.bot.user
-                time = self.localize(datetime.datetime.utcnow())
+                time = self.get.localize(datetime.datetime.utcnow())
                 await sql(1, 
                     f"INSERT INTO `blacklist`(`id`, `reason`, `admin`, `datetime`) VALUES('{ctx.author.id}', '{reason}', '{admin.id}', '{time}')"
                 )
