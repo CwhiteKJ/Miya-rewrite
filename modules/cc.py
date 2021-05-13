@@ -88,7 +88,7 @@ class CC(commands.Cog, name="지식 및 배우기"):
                     query2.replace("\\", "")
                     query2.replace('"', "")
                     query2.replace("'", "")
-                    query2.tolower()
+                    #query2.tolower()
                     embed = None
                     rows = await sql(0, f"SELECT * FROM `cc` WHERE `word` = '{query2}'")
                     if not rows:
