@@ -22,13 +22,19 @@ locale.setlocale(locale.LC_ALL, "")
 
 
 class General(commands.Cog, name="일반"):
+    """일반적이고 다양한 기능들"""
     def __init__(self, miya):
         self.miya = miya
 
     @commands.command()
-    @commands.bot_has_permissions(add_reactions=True,embed_links=True)
+    @commands.bot_has_permissions(embed_links=True)
     async def help(self, ctx, *, input: typing.Optional[str]):
-        """모든 확장과 명령어를 불러옵니다."""
+        """
+        미야야 도움말 [ 확장 이름 ]
+
+
+        미야에게 등록된 확장과 명령어를 불러옵니다.
+        """
         embed = None
         if not input:
             embed = discord.Embed(title="미야 사용법", description=f"`미야야 도움말 < 확장 이름 >`을 사용해 더 많은 정보를 보실 수 있어요!", color=0x5FE9FF, timestamp=datetime.datetime.utcnow())
