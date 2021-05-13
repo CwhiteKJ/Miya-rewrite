@@ -7,6 +7,7 @@ from discord.ext import commands
 
 from lib import utils
 from lib.utils import sql
+from EZPaginator import Paginator
 
 locale.setlocale(locale.LC_ALL, "")
 
@@ -34,6 +35,81 @@ class Administration(commands.Cog, name="관리"):
         await sql(
             1, f"UPDATE `cc` SET `disabled` = 'true` WHERE `no` = '{number}'")
         await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
+
+    @commands.group(name="조회")
+    @is_manager()
+    async def checkout(self, ctx):
+        """
+        미야야 조회 < 유저 / 단어 > < 조회할 키워드 >
+
+
+        유저 ID 혹은 단어에 대해서 미야가 알고 있는 내용을 조회합니다.
+        """
+        if ctx.invoked_subcommand is None:
+            raise commands.BadArgument
+
+    @checkout.command(name="유저")
+    @is_manager()
+    async def _user(self, ctx, user_id):
+        """
+        미야야 조회 유저 < 유저 ID >
+
+
+        해당 유저가 가르친 모든 내용을 조회합니다.
+        """
+        rows = await sql(0, f"SELECT * FROM `cc` WHERE `user` = '{user_id}' ORDER BY `no` ASC")
+        embeds = []
+        for i in range(len(rows)):
+            embed = discord.Embed(
+                title=f"{user_id}에 대한 지식 목록 ({i + 1} / {len(rows)})",
+                color=0x5FE9FF,
+                timestamp=datetime.datetime.utcnow()
+            )
+            embed.add_field(name="입력 내용",
+                            value=rows[i][1],
+                            inline=False)
+            embed.add_field(name="답장 내용",
+                            value=rows[i][2],
+                            inline=False)
+            embed.add_field(name="비활성화되었나요?", value=rows[i][4], inline=False)
+            embed.set_author(name="커맨드 목록",
+                             icon_url=self.bot.user.avatar_url)
+            embeds.append(embed)
+        msg = await ctx.send(embed=embeds[0])
+        page = Paginator(bot=self.bot, message=msg, embeds=embeds)
+        await page.start()
+
+    @checkout.command(name="단어")
+    @is_manager()
+    async def _word(self, ctx, word):
+        """
+        미야야 조회 단어 < 키워드 >
+
+
+        키워드에 등록된 모든 내용을 조회합니다.
+        """
+        word.lower()
+        rows = await sql(0, f"SELECT * FROM `cc` WHERE `word` = '{word}' ORDER BY `no` ASC")
+        embeds = []
+        for i in range(len(rows)):
+            embed = discord.Embed(
+                title=f"{word}에 대한 지식 목록 ({i + 1} / {len(rows)})",
+                color=0x5FE9FF,
+                timestamp=datetime.datetime.utcnow()
+            )
+            embed.add_field(name="답장 내용",
+                            value=rows[i][2],
+                            inline=False)
+            embed.add_field(name="가르친 유저의 ID",
+                            value=rows[i][3],
+                            inline=False)
+            embed.add_field(name="비활성화되었나요?", value=rows[i][4], inline=False)
+            embed.set_author(name="커맨드 목록",
+                             icon_url=self.bot.user.avatar_url)
+            embeds.append(embed)
+        msg = await ctx.send(embed=embeds[0])
+        page = Paginator(bot=self.bot, message=msg, embeds=embeds)
+        await page.start()
 
     @commands.command(name="점검")
     @commands.is_owner()

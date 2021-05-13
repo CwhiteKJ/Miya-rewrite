@@ -14,9 +14,12 @@ class Logger(commands.Cog):
         self.bot = bot
 
     async def log(self, guild_id):
-        return (await sql(
+        rows = await sql(
             0, f"SELECT `eventLog` FROM `guilds` WHERE `guild` = '{guild_id}'")
-                )[0][0]
+        if not rows:
+            return None
+        else:
+            return rows[0][0]
 
     @commands.Cog.listener()
     async def on_message_delete(self, msg):

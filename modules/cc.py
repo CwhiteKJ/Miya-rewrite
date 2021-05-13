@@ -37,6 +37,7 @@ class CC(commands.Cog, name="지식 및 배우기"):
     @commands.command(name="기억해", aliases=["배워"])
     @has_no_symbols()
     async def _learn(self, ctx, word, *, value):
+        word.lower()
         try:
             response = await self.miya.koreanbots.getVote(ctx.author.id)
         except koreanbots.NotFound:
@@ -48,7 +49,7 @@ class CC(commands.Cog, name="지식 및 배우기"):
                 embed = discord.Embed(
                     title="정말로 미야에게 이렇게 가르칠까요?",
                     description=
-                    f"등록되면 미야가 `{word}`라고 물어봤을 때\n```{value}```\n(이)라고 답할거에요.\n \n*부적절한 어휘 및 답변의 경우 예고 없이 삭제될 수 있어요.*",
+                    f"등록되면 미야가 `{word}`라고 물어봤을 때```{value}```(이)라고 답할거에요.\n \n*부적절한 어휘 및 답변의 경우 예고 없이 삭제될 수 있어요.*",
                     color=0x5FE9FF,
                     timestamp=datetime.datetime.utcnow(),
                 )
