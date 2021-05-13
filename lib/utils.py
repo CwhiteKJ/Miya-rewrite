@@ -33,7 +33,6 @@ class Maintaining(commands.CheckFailure):
             f"<:cs_protect:659355468891947008> 지금은 미야와 대화하실 수 없어요.\n```점검 중 : {reason}```"
         )
 
-
 async def sql(type: int, sql: str):
     o = await aiomysql.connect(
         host=config.MySQL["host"],
@@ -115,11 +114,80 @@ class Get:
                 return corona_info
 
 
+class Blacklisting:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.get = Get()
+   
+    async def user(self, task, id, admin, *, reason: typing.Optional[str]):
+        time = self.get.localize(datetime.datetime.utcnow())
+        if task == 0:
+            await sql(
+                1,
+                f"INSERT INTO `blacklist`(`id`, `reason`, `admin`, `datetime`) VALUES('{id}', '{reason}', '{admin.id}', '{self.time}')",
+            )
+            await Hook.terminal(
+                1,
+                f"Added Block >\nBlocked - {id}\nAdmin - {admin} ({admin.id})\nReason - {reason}",
+                "제한 기록",
+                self.miya.user.avatar_url,
+            )
+        elif task == 1:
+            await sql(1,
+                       f"DELETE FROM `blacklist` WHERE `id` = '{id}'")
+            await Hook.terminal(
+                1,
+                f"Removed Block >\nUnblocked - {id}\nAdmin - {admin} ({admin.id})",
+                "제한 기록",
+                self.miya.user.avatar_url,
+            )
+        else:
+            raise commands.BadArgument
+
+    async def word(self, task, word):
+        if task == 0:
+            await sql(
+                1, f"INSERT INTO `forbidden`(`word`) VALUES('{word}')")
+            await Hook.terminal(
+                1,
+                f"New Forbidden >\nAdmin - {ctx.author} ({ctx.author.id})\nPhrase - {word}",
+                "제한 기록",
+                self.miya.user.avatar_url,
+            )
+        elif task == 1:
+            await sql(
+                1, f"DELETE FROM `forbidden` WHERE `word` = '{word}'")
+            await Hook.terminal(
+                1,
+                f"Removed Forbidden >\nAdmin - {ctx.author} ({ctx.author.id})\nPhrase - {word}",
+                "제한 기록",
+                self.miya.user.avatar_url,
+            )
+        else:
+            raise commands.BadArgument
+
+
 class Check:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.hook = Hook()
         self.get = Get()
+        self.black = Blacklisting()
+
+    async def explicit(self, ctx):
+        words = await sql(0, "SELECT * FROM `forbidden`")
+        for word in words:
+            if word[0] in ctx.message.content:
+                return {"Explicit": True, "Word": word[0]}
+        return {"Explicit": False}
+
+    async def block(self, ctx):
+        user = await sql(
+            0, f"SELECT * FROM `users` WHERE `user` = '{ctx.author.id}'")
+        if user[0][1] == "Blocked":
+            rows = await sql(
+                0, f"SELECT * FROM `blacklist` WHERE `id` = '{ctx.author.id}'")
+            {rows[0][1]ctx.bot.get_user(int(rows[0][2]))rows[0][3]
 
     async def mgr(self, ctx):
         if commands.is_owner():
@@ -150,8 +218,19 @@ class Check:
             raise commands.NoPrivateMessage
 
         manage = await self.mgr(ctx)
+        if manage:
+            await self.hook.terminal(
+                0,
+                f"Maintainer >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
+                "명령어 처리 기록",
+                ctx.bot.user.avatar_url,
+            )
+            return True
+
         maintain = await sql(
             0, f"SELECT * FROM `miya` WHERE `miya` = '{ctx.bot.user.id}'")
+        block = await self.block(ctx)
+        explicit = await self.explicit(ctx)
         if maintain[0][1] == "true" and not manage:
             await self.hook.terminal(
                 0,
@@ -161,66 +240,34 @@ class Check:
             )
             raise Maintaining(maintain[0][2])
 
-        reason, admin, time, banned, forbidden = None, None, None, None, None
-        words = await sql(0, "SELECT * FROM `forbidden`")
-        for word in words:
-            if word[0] in ctx.message.content:
-                forbidden = True
-                banned = word[0]
-        users = await sql(
-            0, f"SELECT * FROM `users` WHERE `user` = '{ctx.author.id}'")
-        rows = await sql(
-            0, f"SELECT * FROM `blacklist` WHERE `id` = '{ctx.author.id}'")
-        if rows:
-            if manage is not True:
-                reason = rows[0][1]
-                admin = ctx.bot.get_user(int(rows[0][2]))
-                time = rows[0][3]
-                await self.hook.terminal(
-                    0,
-                    f"Blocked User >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
-                    "명령어 처리 기록",
-                    ctx.bot.user.avatar_url,
-                )
-            else:
-                await ctx.send("당신은 차단되었지만, 관리 권한으로 명령어를 실행했습니다.")
-                await self.hook.terminal(
-                    0,
-                    f"Manager Bypassed >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
-                    "명령어 처리 기록",
-                    ctx.bot.user.avatar_url,
-                )
-                return True
-        elif forbidden is True:
-            if manage is not True:
-                reason = f"부적절한 언행 **[Auto]** - {banned}"
-                admin = ctx.bot.user
-                time = self.get.localize(datetime.datetime.utcnow())
-                await sql(
-                    1,
-                    f"INSERT INTO `blacklist`(`id`, `reason`, `admin`, `datetime`) VALUES('{ctx.author.id}', '{reason}', '{admin.id}', '{time}')",
-                )
-                await self.hook.terminal(
-                    1,
-                    f"New Block >\nVictim - {ctx.author.id}\nAdmin - {admin} ({admin.id})\nReason - {reason}",
-                    "제한 기록",
-                    ctx.bot.user.avatar_url,
-                )
-                await self.hook.terminal(
-                    0,
-                    f"Forbidden >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
-                    "명령어 처리 기록",
-                    ctx.bot.user.avatar_url,
-                )
-            else:
-                await ctx.send("해당 단어는 차단 대상이나, 관리 권한으로 명령어를 실행했습니다.")
-                await self.hook.terminal(
-                    0,
-                    f"Manager Bypassed >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
-                    "명령어 처리 기록",
-                    ctx.bot.user.avatar_url,
-                )
-                return True
+        reason = None
+        admin = None
+        time = None
+        if block["Blocked"]:
+            reason = block["Reason"]
+            await self.hook.terminal(
+                0,
+                f"Blocked User >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
+                "명령어 처리 기록",
+                ctx.bot.user.avatar_url,
+            )
+        elif explicit["Explicit"]:
+            reason = f"부적절한 언행 **[Auto]** - {explicit["Word"]}"
+            admin = ctx.bot.user
+            time = self.get.localize(datetime.datetime.utcnow())
+            await self.black.user(0, ctx.author.id, admin, reason)
+            await self.hook.terminal(
+                1,
+                f"New Block >\nVictim - {ctx.author.id}\nAdmin - {admin} ({admin.id})\nReason - {reason}",
+                "제한 기록",
+                ctx.bot.user.avatar_url,
+            )
+            await self.hook.terminal(
+                0,
+                f"Forbidden >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
+                "명령어 처리 기록",
+                ctx.bot.user.avatar_url,
+            )
         elif not users and ctx.command.name != "가입":
             await self.hook.terminal(
                 0,
@@ -237,6 +284,7 @@ class Check:
                 ctx.bot.user.avatar_url,
             )
             return True
+            
         embed = discord.Embed(
             title=f"이런, {ctx.author}님은 차단되셨어요.",
             description=f"""
@@ -250,3 +298,4 @@ class Check:
         )
         embed.set_author(name="이용 제한", icon_url=ctx.bot.user.avatar_url)
         raise Forbidden(embed)
+        
