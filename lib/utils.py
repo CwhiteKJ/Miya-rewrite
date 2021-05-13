@@ -104,6 +104,7 @@ class Get():
 class Check():
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.hook = Hook()
 
     async def mgr(self, ctx):
         mrows = await sql(0, f"SELECT * FROM `users` WHERE `user` = {ctx.author.id}")
@@ -111,7 +112,7 @@ class Check():
 
     async def identify(self, ctx):
         if ctx.channel.type == discord.ChannelType.private:
-            await Hook.terminal(
+            await self.hook.terminal(
                 0,
                 f"On Directs >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}",
                 "명령어 처리 기록",
@@ -122,7 +123,7 @@ class Check():
         manage = await self.mgr(ctx)
         maintain = await sql(0, f"SELECT * FROM `miya` WHERE `miya` = '{ctx.bot.user.id}'")
         if maintain[0][1] == "true" and not manage:
-            await Hook.terminal(
+            await self.hook.terminal(
                 0,
                 f"Cancelled due to maintaining >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}",
                 "명령어 처리 기록",
@@ -145,14 +146,14 @@ class Check():
                 reason = rows[0][1]
                 admin = ctx.bot.get_user(int(rows[0][2]))
                 time = rows[0][3]
-                await Hook.terminal(0,
+                await self.hook.terminal(0,
                     f"Blocked User >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
                     "명령어 처리 기록",
                     ctx.bot.user.avatar_url,
                 )
             else:
                 await ctx.send("당신은 차단되었지만, 관리 권한으로 명령어를 실행했습니다.")
-                await Hook.terminal(0,
+                await self.hook.terminal(0,
                     f"Manager Bypassed >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
                     "명령어 처리 기록",
                     ctx.bot.user.avatar_url,
@@ -166,33 +167,33 @@ class Check():
                 await sql(1, 
                     f"INSERT INTO `blacklist`(`id`, `reason`, `admin`, `datetime`) VALUES('{ctx.author.id}', '{reason}', '{admin.id}', '{time}')"
                 )
-                await Hook.terminal(1,
+                await self.hook.terminal(1,
                     f"New Block >\nVictim - {ctx.author.id}\nAdmin - {admin} ({admin.id})\nReason - {reason}",
                     "제한 기록",
                     ctx.bot.user.avatar_url,
                 )
-                await Hook.terminal(0,
+                await self.hook.terminal(0,
                     f"Forbidden >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
                     "명령어 처리 기록",
                     ctx.bot.user.avatar_url,
                 )
             else:
                 await ctx.send("해당 단어는 차단 대상이나, 관리 권한으로 명령어를 실행했습니다.")
-                await Hook.terminal(0,
+                await self.hook.terminal(0,
                     f"Manager Bypassed >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
                     "명령어 처리 기록",
                     ctx.bot.user.avatar_url,
                 )
                 return True
         elif not users and ctx.command.name != "가입":
-            await Hook.terminal(0,
+            await self.hook.terminal(0,
                 f"Cancelled >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
                 "명령어 처리 기록",
                 ctx.bot.user.avatar_url,
             )
             raise NoReg()
         else:
-            await Hook.terminal(0,
+            await self.hook.terminal(0,
                 f"Processed >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
                 "명령어 처리 기록",
                 ctx.bot.user.avatar_url,
