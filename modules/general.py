@@ -26,7 +26,7 @@ class General(commands.Cog, name="일반"):
     def __init__(self, miya):
         self.miya = miya
 
-    @commands.command()
+    @commands.command(name="도움말", aliases=["도움", "명령어"])
     @commands.bot_has_permissions(embed_links=True)
     async def help(self, ctx, *, input: typing.Optional[str]):
         """
