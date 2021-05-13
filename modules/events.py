@@ -20,6 +20,7 @@ Check = utils.Check()
 
 
 class Listeners(commands.Cog, name="이벤트 리스너"):
+    """그게.. 확장은 확장인데 명령어가 없네?"""
     def __init__(self, miya):
         self.miya = miya
 
