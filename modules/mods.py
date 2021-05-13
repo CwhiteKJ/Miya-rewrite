@@ -9,7 +9,8 @@ from lib.utils import sql
 locale.setlocale(locale.LC_ALL, "")
 
 
-class Moderation(commands.Cog, name="모드"):
+class Moderation(commands.Cog, name="관리"):
+    """쉽고 빠른 ||~~군기 잡기~~|| 유저 관리"""
     def __init__(self, miya):
         self.miya = miya
 
