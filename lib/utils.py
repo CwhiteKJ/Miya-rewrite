@@ -113,46 +113,46 @@ class Blacklisting:
     def __init__(self):
         self.get = Get()
 
-    async def user(self, task, id, admin, *, reason: typing.Optional[str]):
+    async def user(self, ctx, task, id, *, reason: typing.Optional[str]):
         time = self.get.localize(datetime.datetime.utcnow())
         if task == 0:
             await sql(
                 1,
-                f"INSERT INTO `blacklist`(`id`, `reason`, `admin`, `datetime`) VALUES('{id}', '{reason}', '{admin.id}', '{self.time}')",
+                f"INSERT INTO `blacklist`(`id`, `reason`, `admin`, `datetime`) VALUES('{id}', '{reason}', '{ctx.author.id}', '{self.time}')",
             )
             await Hook.terminal(
                 1,
-                f"Added Block >\nBlocked - {id}\nAdmin - {admin} ({admin.id})\nReason - {reason}",
+                f"Added Block >\nBlocked - {id}\nAdmin - {ctx.author} ({ctx.author.id})\nReason - {reason}",
                 "제한 기록",
-                self.miya.user.avatar_url,
+                ctx.bot.user.avatar_url,
             )
         elif task == 1:
             await sql(1, f"DELETE FROM `blacklist` WHERE `id` = '{id}'")
             await Hook.terminal(
                 1,
-                f"Removed Block >\nUnblocked - {id}\nAdmin - {admin} ({admin.id})",
+                f"Removed Block >\nUnblocked - {id}\nAdmin - {ctx.author} ({ctx.author.id})",
                 "제한 기록",
-                self.miya.user.avatar_url,
+                ctx.bot.user.avatar_url,
             )
         else:
             raise commands.BadArgument
 
-    async def word(self, task, word):
+    async def word(self, ctx, task, word):
         if task == 0:
             await sql(1, f"INSERT INTO `forbidden`(`word`) VALUES('{word}')")
             await Hook.terminal(
                 1,
-                f"New Forbidden >\nAdmin - {ctx.author} ({ctx.author.id})\nPhrase - {word}",
+                f"New Forbidden >\nAdmin - {admin} ({admin.id})\nPhrase - {word}",
                 "제한 기록",
-                self.miya.user.avatar_url,
+                ctx.bot.user.avatar_url,
             )
         elif task == 1:
             await sql(1, f"DELETE FROM `forbidden` WHERE `word` = '{word}'")
             await Hook.terminal(
                 1,
-                f"Removed Forbidden >\nAdmin - {ctx.author} ({ctx.author.id})\nPhrase - {word}",
+                f"Removed Forbidden >\nAdmin - {admin} ({admin.id})\nPhrase - {word}",
                 "제한 기록",
-                self.miya.user.avatar_url,
+                ctx.bot.user.avatar_url,
             )
         else:
             raise commands.BadArgument
