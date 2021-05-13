@@ -49,25 +49,19 @@ class General(commands.Cog, name="일반"):
             if commands_desc:
                 embed.add_field(name='확장에 포함되지 않는 명령어 목록', value=commands_desc, inline=False)
             embed.add_field(name="미야에 대하여", value=f"Powered by Team Urtica with ❤ in discord.py\n봇에 대한 정보는 `미야야 미야` 명령어를 참고하세요!")
-            embed.set_footer(text="미야를 사용해주셔서 감사합니다!")
-            embed.set_author(name="도움말", icon_url=self.miya.user.avatar_url)
         else:
             for cog in self.bot.cogs:
                 if cog.lower() == input.lower():
                     embed = discord.Embed(title=f'{cog} 확장의 명령어', description=self.bot.cogs[cog].__doc__, color=0x5FE9FF, timestamp=datetime.datetime.utcnow())
-                    embed.set_footer(text"미야를 사용해주셔서 감사합니다!")
-                    embed.set_author(name="도움말", icon_url=self.miya.user.avatar_url)
                     for command in self.miya.get_cog(cog).get_commands():
                         if not command.hidden:
                             embed.add_field(name=command.help.split("\n")[0], value=command.help.split("\n")[2], inline=False)
                     if len(embed.fields) < 1:
                         embed = discord.Embed(title="음, 무엇을 말하시는 건지 모르겠네요.", description=f"{cog} 확장은 지금 사용할 수 있는 명령어가 없어요.", color=0xFF3333, timestamp=datetime.datetime.utcnow())
-                        embed.set_footer(text="미야를 사용해주셔서 감사합니다!")
-                        embed.set_author(name="도움말", icon_url=self.miya.user.avatar_url)
                 else:
                     embed = discord.Embed(title="음, 무엇을 말하시는 건지 모르겠네요.", description=f"`{input}`(이)라는 확장은 존재하지 않아요.", color=0xFF3333, timestamp=datetime.datetime.utcnow()) 
-                    embed.set_footer(text="미야를 사용해주셔서 감사합니다!")
-                    embed.set_author(name="도움말", icon_url=self.miya.user.avatar_url)
+        embed.set_footer(text="미야를 사용해주셔서 감사합니다!")
+        embed.set_author(name="도움말", icon_url=self.miya.user.avatar_url)
         await ctx.reply(embed=embed)
 
     @commands.command(name="핑")
