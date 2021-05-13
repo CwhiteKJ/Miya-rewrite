@@ -125,7 +125,7 @@ class Check():
 
         manage = await self.mgr(ctx)
         maintain = await sql(0, f"SELECT * FROM `miya` WHERE `miya` = '{ctx.bot.user.id}'")
-        if maintain[0][1] == "true":
+        if maintain[0][1] == "true" and not manage:
             await self.hook.terminal(
                 0,
                 f"Cancelled due to maintaining >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}",
