@@ -154,7 +154,6 @@ class Settings(commands.Cog, name="설정"):
             elif what == "로그":
                 webhook = await channel.create_webhook(
                     name="미야 로그",
-                    avatar=self.miya.user.avatar_url,
                     reason="미야 로그 설정")
                 await sql(
                     1,

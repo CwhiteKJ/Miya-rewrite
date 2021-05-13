@@ -229,7 +229,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                 0, f"SELECT * FROM `guilds` WHERE `guild` = '{msg.guild.id}'")
             if rows:
                 if rows[0][3] == "true":
-                    if msg.channel.topic is None or "=무시" not in msg.channel.topic:
+                    if not msg.channel.topic or "=무시" not in msg.channel.topic:
                         try:
                             await msg.delete()
                             await msg.channel.send(
