@@ -67,6 +67,7 @@ class Administration(commands.Cog, name="관리"):
                 color=0x5FE9FF,
                 timestamp=datetime.datetime.utcnow(),
             )
+            embed.add_field(name="지식 번호", value=rows[i][0], inline=False)
             embed.add_field(name="입력 내용", value=rows[i][1], inline=False)
             embed.add_field(name="답장 내용", value=rows[i][2], inline=False)
             embed.add_field(name="비활성화되었나요?", value=rows[i][4], inline=False)
@@ -95,6 +96,7 @@ class Administration(commands.Cog, name="관리"):
                 color=0x5FE9FF,
                 timestamp=datetime.datetime.utcnow(),
             )
+            embed.add_field(name="지식 번호", value=rows[i][0], inline=False)
             embed.add_field(name="답장 내용", value=rows[i][2], inline=False)
             embed.add_field(name="가르친 유저의 ID", value=rows[i][3], inline=False)
             embed.add_field(name="비활성화되었나요?", value=rows[i][4], inline=False)
