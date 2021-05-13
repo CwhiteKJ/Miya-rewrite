@@ -13,6 +13,7 @@ from discord import AsyncWebhookAdapter
 from discord import Webhook
 from discord.ext import commands
 
+from lib import config
 from lib import utils
 from lib.utils import sql
 
@@ -46,7 +47,7 @@ class General(commands.Cog, name="일반"):
             cogs_desc = ""
             for cog in self.miya.cogs:
                 if (len(self.miya.get_cog(cog).get_commands()) >= 1
-                        and str(cog) != "Jishaku"):
+                        and str(cog) not in config.Hidden):
                     cogs_desc += f"`{cog}` - {self.miya.cogs[cog].__doc__}\n"
             embed.add_field(name="확장 목록", value=cogs_desc, inline=False)
             commands_desc = ""
