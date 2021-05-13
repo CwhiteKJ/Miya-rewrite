@@ -73,10 +73,10 @@ class Administration(commands.Cog, name="관리"):
                             inline=False)
             embed.add_field(name="비활성화되었나요?", value=rows[i][4], inline=False)
             embed.set_author(name="커맨드 목록",
-                             icon_url=self.bot.user.avatar_url)
+                             icon_url=self.miya.user.avatar_url)
             embeds.append(embed)
         msg = await ctx.send(embed=embeds[0])
-        page = Paginator(bot=self.bot, message=msg, embeds=embeds)
+        page = Paginator(bot=self.miya, message=msg, embeds=embeds)
         await page.start()
 
     @checkout.command(name="단어")
@@ -105,10 +105,10 @@ class Administration(commands.Cog, name="관리"):
                             inline=False)
             embed.add_field(name="비활성화되었나요?", value=rows[i][4], inline=False)
             embed.set_author(name="커맨드 목록",
-                             icon_url=self.bot.user.avatar_url)
+                             icon_url=self.miya.user.avatar_url)
             embeds.append(embed)
         msg = await ctx.send(embed=embeds[0])
-        page = Paginator(bot=self.bot, message=msg, embeds=embeds)
+        page = Paginator(bot=self.miya, message=msg, embeds=embeds)
         await page.start()
 
     @commands.command(name="점검")
