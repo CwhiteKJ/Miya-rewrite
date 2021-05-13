@@ -11,6 +11,7 @@ locale.setlocale(locale.LC_ALL, "")
 
 
 class Settings(commands.Cog, name="설정"):
+    """이것저것 조율하며 미야를 더 효율적으로"""
     def __init__(self, miya):
         self.miya = miya
 
