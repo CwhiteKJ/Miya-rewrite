@@ -33,6 +33,7 @@ class Maintaining(commands.CheckFailure):
             f"<:cs_protect:659355468891947008> 지금은 미야와 대화하실 수 없어요.\n```{reason}```"
         )
 
+
 async def sql(type: int, sql: str):
     o = await aiomysql.connect(
         host=config.MySQL["host"],
@@ -111,7 +112,7 @@ class Get:
 class Blacklisting:
     def __init__(self):
         self.get = Get()
-   
+
     async def user(self, task, id, admin, *, reason: typing.Optional[str]):
         time = self.get.localize(datetime.datetime.utcnow())
         if task == 0:
@@ -126,8 +127,7 @@ class Blacklisting:
                 self.miya.user.avatar_url,
             )
         elif task == 1:
-            await sql(1,
-                       f"DELETE FROM `blacklist` WHERE `id` = '{id}'")
+            await sql(1, f"DELETE FROM `blacklist` WHERE `id` = '{id}'")
             await Hook.terminal(
                 1,
                 f"Removed Block >\nUnblocked - {id}\nAdmin - {admin} ({admin.id})",
@@ -139,8 +139,7 @@ class Blacklisting:
 
     async def word(self, task, word):
         if task == 0:
-            await sql(
-                1, f"INSERT INTO `forbidden`(`word`) VALUES('{word}')")
+            await sql(1, f"INSERT INTO `forbidden`(`word`) VALUES('{word}')")
             await Hook.terminal(
                 1,
                 f"New Forbidden >\nAdmin - {ctx.author} ({ctx.author.id})\nPhrase - {word}",
@@ -148,8 +147,7 @@ class Blacklisting:
                 self.miya.user.avatar_url,
             )
         elif task == 1:
-            await sql(
-                1, f"DELETE FROM `forbidden` WHERE `word` = '{word}'")
+            await sql(1, f"DELETE FROM `forbidden` WHERE `word` = '{word}'")
             await Hook.terminal(
                 1,
                 f"Removed Forbidden >\nAdmin - {ctx.author} ({ctx.author.id})\nPhrase - {word}",
@@ -179,7 +177,12 @@ class Check:
         if user[0][1] == "Blocked":
             rows = await sql(
                 0, f"SELECT * FROM `blacklist` WHERE `id` = '{ctx.author.id}'")
-            return {"Blocked": True, "Reason": rows[0][1], "Admin": ctx.bot.get_user(int(rows[0][2])), "Time": rows[0][3]}
+            return {
+                "Blocked": True,
+                "Reason": rows[0][1],
+                "Admin": ctx.bot.get_user(int(rows[0][2])),
+                "Time": rows[0][3],
+            }
         return {"Blocked": False}
 
     async def mgr(self, ctx):
@@ -278,7 +281,7 @@ class Check:
                 ctx.bot.user.avatar_url,
             )
             return True
-            
+
         embed = discord.Embed(
             title=f"이런, {ctx.author}님은 차단되셨어요.",
             description=f"""
@@ -292,4 +295,3 @@ class Check:
         )
         embed.set_author(name="이용 제한", icon_url=ctx.bot.user.avatar_url)
         raise Forbidden(embed)
-        
