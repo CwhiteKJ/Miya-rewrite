@@ -45,7 +45,8 @@ class General(commands.Cog, name="일반"):
             commands_desc = ''
             for command in self.bot.walk_commands(): # if cog not in a cog # listing command if cog name is None and command isn't hidden
                 if not command.cog_name and not command.hidden:
-                    commands_desc += f'{command.help.split("\n")[0]} - {command.help.split("\n")[2]}\n'
+                    temp = command.help.split("\n")         
+                    commands_desc += f'{temp[0]} - {temp[2]}\n'
             if commands_desc:
                 embed.add_field(name='확장에 포함되지 않는 명령어 목록', value=commands_desc, inline=False)
             embed.add_field(name="미야에 대하여", value=f"Powered by Team Urtica with ❤ in discord.py\n봇에 대한 정보는 `미야야 미야` 명령어를 참고하세요!")
