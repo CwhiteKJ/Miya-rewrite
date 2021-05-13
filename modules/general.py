@@ -45,7 +45,8 @@ class General(commands.Cog, name="일반"):
             )
             cogs_desc = ""
             for cog in self.miya.cogs:
-                cogs_desc += f"`{cog}` - {self.miya.cogs[cog].__doc__}\n"
+                if len(self.miya.get_cog(cog).get_commands()) >= 1 1:
+                    cogs_desc += f"`{cog}` - {self.miya.cogs[cog].__doc__}\n"
             embed.add_field(name="확장 목록", value=cogs_desc, inline=False)
             commands_desc = ""
             for command in self.miya.walk_commands():
