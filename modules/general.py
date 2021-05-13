@@ -18,6 +18,7 @@ from lib import utils
 from lib.utils import sql
 
 Get = utils.Get()
+Check = utils.Check()
 
 locale.setlocale(locale.LC_ALL, "")
 
@@ -74,7 +75,7 @@ class General(commands.Cog, name="일반"):
                         timestamp=datetime.datetime.utcnow(),
                     )
                     for command in self.miya.get_cog(cog).get_commands():
-                        if not command.hidden:
+                        if not command.hidden or Check.owner(ctx):
                             embed.add_field(
                                 name=command.help.split("\n")[0],
                                 value=command.help.split("\n")[3],
@@ -83,7 +84,7 @@ class General(commands.Cog, name="일반"):
                     if len(embed.fields) < 1:
                         embed = discord.Embed(
                             title="음, 무엇을 말하시는 건지 모르겠네요.",
-                            description=f"{cog} 확장은 지금 사용할 수 있는 명령어가 없어요.",
+                            description=f"`{cog}` 확장은 지금 사용할 수 있는 명령어가 없어요.",
                             color=0xFF3333,
                             timestamp=datetime.datetime.utcnow(),
                         )
