@@ -16,11 +16,11 @@ Check = utils.Check()
 
 def has_no_symbols():
     async def search(ctx):
-        return "\\" not in ctx.message.content and '"' not in ctx.message.content and "'" not in ctx.message.content
-    if not commands.check(search):
-        raise commands.BadArgument
-    else:
-        return True
+        if "\\" not in ctx.message.content and '"' not in ctx.message.content and "'" not in ctx.message.content:
+            return True
+        return False
+    return commands.check(search)
+        
 
 class CC(commands.Cog, name="지식 및 배우기"):
     def __init__(self, miya):
