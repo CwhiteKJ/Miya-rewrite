@@ -152,9 +152,8 @@ class Settings(commands.Cog, name="설정"):
                             f"<:cs_settings:659355468992610304> {channel.mention} 채널에 미야 지원 서버의 공지 채널을 팔로우했어요.\n \n*미야의 공지를 더 이상 받고 싶지 않다면 서버의 연동 설정에서 팔로우를 취소해주세요!*"
                         )
             elif what == "로그":
-                webhook = await channel.create_webhook(
-                    name="미야 로그",
-                    reason="미야 로그 설정")
+                webhook = await channel.create_webhook(name="미야 로그",
+                                                       reason="미야 로그 설정")
                 await sql(
                     1,
                     f"UPDATE `guilds` SET `eventLog` = '{webhook.url}' WHERE `guild` = '{ctx.guild.id}'",
