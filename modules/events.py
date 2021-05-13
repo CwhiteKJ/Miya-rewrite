@@ -140,10 +140,13 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
             if rows:
                 if rows[0][3] == "true":
                     if msg.channel.topic is None or "=무시" not in msg.channel.topic:
-                        await msg.delete()
-                        await msg.channel.send(
-                            f"<:cs_trash:659355468631769101> {msg.author.mention} 서버 설정에 따라 이 채널에는 Discord 초대 링크를 포스트하실 수 없어요."
-                        )
+                        try:
+                            await msg.delete()
+                            await msg.channel.send(
+                                f"<:cs_trash:659355468631769101> {msg.author.mention} 서버 설정에 따라 이 채널에는 Discord 초대 링크를 포스트하실 수 없어요."
+                            )
+                        except:
+                            return
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
