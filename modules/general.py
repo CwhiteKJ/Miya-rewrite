@@ -8,6 +8,7 @@ import os
 
 import aiohttp
 import discord
+from discord import Webhook, AsyncWebhookAdapter
 import koreanbots
 from discord.ext import commands
 
@@ -176,10 +177,15 @@ class General(commands.Cog, name="일반"):
                 channel = ctx.guild.get_channel(int(memberNoti[0][1]))
                 if channel is not None:
                     memberCh = channel.mention
-            if guilds[0][1] != 1234:
-                channel = ctx.guild.get_channel(int(guilds[0][1]))
-                if channel is not None:
-                    logCh = channel.mention
+            if guilds[0][1] != 'None':
+                async with aiohttp.ClientSession() as session:
+                    try:
+                        webhook = Webhook.from_url(guilds[0][1], adapter=AsyncWebhookAdapter(session))
+                        channel = webhook.channel
+                        if channel is not None:
+                            logCh = channel.mention
+                    except:
+                        pass
             location = {
                 "amsterdam": "네덜란드 - 암스테르담",
                 "brazil": "브라질",
@@ -222,7 +228,7 @@ class General(commands.Cog, name="일반"):
                             value="📢 **서버의 연동 설정을 확인하세요!**",
                             inline=False)
             embed.add_field(name="멤버 알림 채널", value=memberCh)
-            embed.add_field(name="로그 채널 ⚒️", value=logCh)
+            embed.add_field(name="로그 채널", value=logCh)
             embed.add_field(name="뮤트 역할", value=muteRole)
             embed.add_field(name="서버 부스트 인원 수",
                             value=f"{len(ctx.guild.premium_subscribers)}명")
@@ -241,24 +247,21 @@ class General(commands.Cog, name="일반"):
             await ctx.reply(embed=embed)
 
     @commands.command(name="말해", aliases=["말해줘"])
-    @commands.bot_has_permissions(manage_messages=True)
-    async def _say(self, ctx, *args):
+    async def _say(self, ctx, *, text):
         """
         미야야 말해 < 할말 >
 
 
         미야가 당신이 한 말을 조금 가공해서(?) 따라합니다.
         """
-        if not args:
-            await ctx.send(
-                f"{ctx.author.mention} `미야야 말해 < 할말 > ` 이 올바른 명령어에요!")
-        else:
-            text = " ".join(args)
-            embed = discord.Embed(description=text, color=0x5FE9FF)
-            embed.set_author(name=f"{ctx.author}님이 말하시길...",
-                             icon_url=ctx.author.avatar_url)
+        embed = discord.Embed(description=text, color=0x5FE9FF)
+        embed.set_author(name=f"{ctx.author}님이 말하시길...",
+                         icon_url=ctx.author.avatar_url)
+        try:
             await ctx.message.delete()
-            await ctx.send(embed=embed)
+        except:
+            pass
+        await ctx.send(embed=embed)
 
     @commands.command(name="코로나")
     async def _corona_info(self, ctx):

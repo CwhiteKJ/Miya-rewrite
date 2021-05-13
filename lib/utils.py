@@ -109,6 +109,8 @@ class Check():
 
     async def mgr(self, ctx):
         mrows = await sql(0, f"SELECT * FROM `users` WHERE `user` = {ctx.author.id}")
+        if not mrows:
+            return False
         return mrows[0][1] == "Maintainer" or mrows[0][1] == "Administrator"
 
     async def identify(self, ctx):
@@ -123,7 +125,7 @@ class Check():
 
         manage = await self.mgr(ctx)
         maintain = await sql(0, f"SELECT * FROM `miya` WHERE `miya` = '{ctx.bot.user.id}'")
-        if maintain[0][1] == "true" and not manage:
+        if maintain[0][1] == "true":
             await self.hook.terminal(
                 0,
                 f"Cancelled due to maintaining >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}",

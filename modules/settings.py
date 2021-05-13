@@ -95,23 +95,10 @@ class Settings(commands.Cog, name="설정"):
                         await ctx.reply(
                             f"<:cs_settings:659355468992610304> {channel.mention} 채널에 미야 지원 서버의 공지 채널을 팔로우했어요.\n \n*미야의 공지를 더 이상 받고 싶지 않다면 서버의 연동 설정에서 팔로우를 취소해주세요!*"
                         )
-            else:
-                if what == "로그":
-                    table = "guilds"
-                    value = "eventLog"
-                elif what == "입퇴장":
-                    table = "memberNoti"
-                    value = "channel"
-                if value is not None and table is not None:
-                    result = await sql(1,
-                        f"UPDATE `{table}` SET `{value}` = '{channel.id}' WHERE `guild` = '{ctx.guild.id}'"
-                    )
-                    if result == "SUCCESS":
-                        await ctx.reply(
-                            f"<:cs_settings:659355468992610304> {what} 채널을 {channel.mention} 채널로 설정했어요."
-                        )
-                else:
-                    raise commands.BadArgument
+            elif what == "로그":
+                webhook = await channel.create_webhook(name="미야 로그", avatar=self.miya.user.avatar_url, reason="미야 로그 설정")
+                await sql(1, f"UPDATE `guilds` SET `eventLog` = '{webhook.url}' WHERE `guild` = '{ctx.guild.id}'")
+                await ctx.reply(f"<:cs_settings:659355468992610304> {channel.mention} 채널에 미야 지원 서버의 공지 채널을 팔로우했어요.")
 
     @commands.command(name="링크차단")
     @commands.has_permissions(manage_guild=True)
