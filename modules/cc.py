@@ -84,7 +84,11 @@ class CC(commands.Cog, name="지식 및 배우기"):
                         "Content-Type": "application/json",
                     }
                     query = ctx.message.content.replace("미야야 ", "")
-                    query2 = query.replace(" ", "").replace("\\", "").replace('"', "").replace("'", "").tolower()
+                    query2 = query.replace(" ", "")
+                    query2.replace("\\", "")
+                    query2.replace('"', "")
+                    query2.replace("'", "")
+                    query2.tolower()
                     embed = None
                     rows = await sql(0, f"SELECT * FROM `cc` WHERE `word` = '{query2}'")
                     if not rows:
@@ -125,7 +129,7 @@ class CC(commands.Cog, name="지식 및 배우기"):
                             )
                     else:
                         row = random.choice(rows)
-                        user = self.miya.get_user(row[3])
+                        user = self.miya.get_user(int(row[3]))
                         embed = discord.Embed(
                                 title=row[2],
                                 description=
