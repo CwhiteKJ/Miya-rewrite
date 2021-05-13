@@ -27,6 +27,21 @@ class Administration(commands.Cog, name="미야 유지보수"):
     def is_owner():
         return commands.check(Check.owner)
 
+    @commands.command(name="권한", hidden=True)
+    @is_owner()
+    async def _permission(self, ctx, user: discord.User, permission: str):
+        """
+        미야야 권한 < @유저 > < 설정할 권한 >
+
+
+        유저의 권한을 설정합니다.
+        """
+        rows = await sql(0, f"SELECT * FROM `users` WHERE `user` = '{user.id}'")
+        if not rows:
+            raise commands.BadArgument
+        await sql(1, f"UPDATE `users` SET `permission` = '{permission}' WHERE `user` = '{user.id}'")
+        await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
+
     @commands.command(name="비활성화", hidden=True)
     @is_manager()
     async def _remove(self, ctx, number: int):
@@ -36,6 +51,9 @@ class Administration(commands.Cog, name="미야 유지보수"):
 
         가르쳐진 지식을 비활성화합니다.
         """
+        rows = await sql(0, f"SELECT * FROM `cc` WHERE `no` = '{number}'")
+        if not rows:
+            raise commands.BadArgument
         await sql(
             1, f"UPDATE `cc` SET `disabled` = 'true' WHERE `no` = '{number}'")
         await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
@@ -49,6 +67,9 @@ class Administration(commands.Cog, name="미야 유지보수"):
 
         비활성화된 지식을 활성화합니다.
         """
+        rows = await sql(0, f"SELECT * FROM `cc` WHERE `no` = '{number}'")
+        if not rows:
+            raise commands.BadArgument
         await sql(
             1, f"UPDATE `cc` SET `disabled` = 'false' WHERE `no` = '{number}'")
         await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
@@ -57,7 +78,7 @@ class Administration(commands.Cog, name="미야 유지보수"):
     @is_manager()
     async def checkout(self, ctx):
         """
-        미야야 조회 < 유저 / 단어 > < 조회할 키워드 >
+        미야야 조회 < 유저 / 단어 > < 조회할 값 >
 
 
         유저 ID 혹은 단어에 대해서 미야가 알고 있는 내용을 조회합니다.
