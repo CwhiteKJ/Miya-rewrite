@@ -52,6 +52,9 @@ class CC(commands.Cog, name="지식 및 배우기"):
                     color=0x5FE9FF,
                     timestamp=datetime.datetime.utcnow(),
                 )
+                embed.set_author(name="가르치기", icon_url=self.miya.user.avatar_url)
+                embed.set_thumbnail(url=ctx.author.avatar_url_as(static_format="png", size=2048))
+                embed.set_footer(text="미야를 똑똑하게 만들기 프로젝트")
                 msg = await ctx.reply(embed=embed)
                 await msg.add_reaction("<:cs_yes:659355468715786262>")
                 await msg.add_reaction("<:cs_no:659355468816187405>")
@@ -77,10 +80,13 @@ class CC(commands.Cog, name="지식 및 배우기"):
                         embed = discord.Embed(
                             title="가르쳐주셔서 고마워요!",
                             description=
-                            f"이제 `{word}`에 이렇게 답할거에요:\n```{value}```\n.",
+                            f"이제 `{word}`에 이렇게 답할거에요:\n```{value}```",
                             color=0x5FE9FF,
                             timestamp=datetime.datetime.utcnow(),
                         )
+                        embed.set_author(name="가르치기", icon_url=self.miya.user.avatar_url)
+                        embed.set_thumbnail(url=ctx.author.avatar_url_as(static_format="png", size=2048))
+                        embed.set_footer(text="미야를 똑똑하게 만들기 프로젝트")
                         await msg.edit(embed=embed)
                     else:
                         await msg.delete()
