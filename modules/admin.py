@@ -35,6 +35,19 @@ class Administration(commands.Cog, name="관리"):
         await sql(
             1, f"UPDATE `cc` SET `disabled` = 'true' WHERE `no` = '{number}'")
         await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
+    
+    @commands.command(name="활성화")
+    @is_manager()
+    async def _remove(self, ctx, number: int):
+        """
+        미야야 활성화 < 번호 >
+
+
+        비활성화된 지식을 활성화합니다.
+        """
+        await sql(
+            1, f"UPDATE `cc` SET `disabled` = 'false' WHERE `no` = '{number}'")
+        await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
 
     @commands.group(name="조회")
     @is_manager()
