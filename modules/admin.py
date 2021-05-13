@@ -36,10 +36,14 @@ class Administration(commands.Cog, name="미야 유지보수"):
 
         유저의 권한을 설정합니다.
         """
-        rows = await sql(0, f"SELECT * FROM `users` WHERE `user` = '{user.id}'")
+        rows = await sql(0,
+                         f"SELECT * FROM `users` WHERE `user` = '{user.id}'")
         if not rows:
             raise commands.BadArgument
-        await sql(1, f"UPDATE `users` SET `permission` = '{permission}' WHERE `user` = '{user.id}'")
+        await sql(
+            1,
+            f"UPDATE `users` SET `permission` = '{permission}' WHERE `user` = '{user.id}'",
+        )
         await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
 
     @commands.command(name="비활성화", hidden=True)
