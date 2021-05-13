@@ -25,6 +25,41 @@ class General(commands.Cog, name="일반"):
     def __init__(self, miya):
         self.miya = miya
 
+    @commands.command()
+    @commands.bot_has_permissions(add_reactions=True,embed_links=True)
+    async def help(self, ctx, *, input: typing.Optional[str]):
+        """모든 확장과 명령어를 불러옵니다."""
+        embed = None
+        if not input:
+            embed = discord.Embed(title="미야 사용법", description=f"`미야야 도움말 < 확장 이름 >`을 사용해 더 많은 정보를 보실 수 있어요!", color=0x5FE9FF, timestamp=datetime.datetime.utcnow())
+            cogs_desc = ''
+            for cog in self.bot.cogs:
+                cogs_desc += f'`{cog}` - {self.bot.cogs[cog].__doc__}\n'
+            embed.add_field(name='확장 목록', value=cogs_desc, inline=False)
+            commands_desc = ''
+            for command in self.bot.walk_commands(): # if cog not in a cog # listing command if cog name is None and command isn't hidden
+                if not command.cog_name and not command.hidden:
+                    commands_desc += f'{command.help.split("\n")[0]} - {command.help.split("\n")[2]}\n'
+            if commands_desc:
+                embed.add_field(name='확장에 포함되지 않는 명령어 목록', value=commands_desc, inline=False)
+            embed.add_field(name="미야에 대하여", value=f"Powered by Team Urtica with ❤ in discord.py\n봇에 대한 정보는 `미야야 미야` 명령어를 참고하세요!")
+            embed.set_footer(text=f"미야를 사용해주셔서 감사합니다!")
+            embed.set_author(name="도움말", icon_url=self.miya.user.avatar_url)
+        else:
+            for cog in self.bot.cogs:
+                if cog.lower() == input.lower():
+                    embed = discord.Embed(title=f'{cog} 확장의 명령어', description=self.bot.cogs[cog].__doc__, color=0x5FE9FF, timestamp=datetime.datetime.utcnow())
+                    embed.set_footer(text=f"미야를 사용해주셔서 감사합니다!")
+                    embed.set_author(name="도움말", icon_url=self.miya.user.avatar_url)
+                    for command in self.bot.get_cog(cog).get_commands():
+                        if not command.hidden:
+                            embed.add_field(name=command.help.split("\n")[0], value=command.help.split("\n")[2], inline=False)
+                else:
+                    embed = discord.Embed(title="음, 무엇을 말하시는 건지 모르겠네요.", description=f"`{input}`(이)라는 확장은 존재하지 않아요.", color=0xFF3333, timestamp=datetime.datetime.utcnow()) 
+                    embed.set_footer(text=f"미야를 사용해주셔서 감사합니다!")
+                    embed.set_author(name="도움말", icon_url=self.miya.user.avatar_url)
+        await ctx.reply(embed=embed)
+
     @commands.command(name="핑")
     async def ping(self, ctx):
         """
