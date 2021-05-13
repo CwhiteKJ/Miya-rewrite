@@ -55,7 +55,7 @@ class Settings(commands.Cog, name="설정"):
                     except:
                         pass
                     await register_msg.delete()
-                    result = await self.miya.sql(
+                    result = await sql(
                         1,
                         f"INSERT INTO `users`(`user`, `money`) VALUES('{ctx.author.id}', '500')",
                     )
