@@ -97,7 +97,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                     query2.replace("\\", "")
                     query2.replace('"', "")
                     query2.replace("'", "")
-                    query2.tolower()
+                    query2.lower()
                     embed = None
                     rows = await sql(
                         0, f"SELECT * FROM `cc` WHERE `word` = '{query2}'")
