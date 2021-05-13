@@ -72,7 +72,7 @@ class CC(commands.Cog, name="지식 및 배우기"):
                         number = int(rows[0][0]) + 1
                         await sql(
                             1,
-                            f"INSERT INTO `cc`(`no`, `word`, `description`, `user`, `disabled`) VALUES('{number}', '{word}', '{value}', '{ctx.author.id}', 'false')",
+                            f"INSERT INTO `cc`(`no`, `word`, `value`, `user`, `disabled`) VALUES('{number}', '{word}', '{value}', '{ctx.author.id}', 'false')",
                         )
                         embed = discord.Embed(
                             title="가르쳐주셔서 고마워요!",
