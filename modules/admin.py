@@ -16,7 +16,8 @@ Check = utils.Check()
 Get = utils.Get()
 
 
-class Administration(commands.Cog, name="관리"):
+class Administration(commands.Cog, name="미야 유지보수"):
+    """미야의 유지 관리 및 보수에 사용되는 것들"""
     def __init__(self, miya):
         self.miya = miya
 
@@ -26,7 +27,7 @@ class Administration(commands.Cog, name="관리"):
     def is_owner():
         return commands.check(Check.owner)
 
-    @commands.command(name="비활성화")
+    @commands.command(name="비활성화", hidden=True)
     @is_manager()
     async def _remove(self, ctx, number: int):
         """
@@ -39,7 +40,7 @@ class Administration(commands.Cog, name="관리"):
             1, f"UPDATE `cc` SET `disabled` = 'true' WHERE `no` = '{number}'")
         await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
 
-    @commands.command(name="활성화")
+    @commands.command(name="활성화", hidden=True)
     @is_manager()
     async def _active(self, ctx, number: int):
         """
@@ -52,7 +53,7 @@ class Administration(commands.Cog, name="관리"):
             1, f"UPDATE `cc` SET `disabled` = 'false' WHERE `no` = '{number}'")
         await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
 
-    @commands.group(name="조회")
+    @commands.group(name="조회", hidden=True)
     @is_manager()
     async def checkout(self, ctx):
         """
@@ -64,7 +65,7 @@ class Administration(commands.Cog, name="관리"):
         if ctx.invoked_subcommand is None:
             raise commands.BadArgument
 
-    @checkout.command(name="유저")
+    @checkout.command(name="유저", hidden=True)
     @is_manager()
     async def _user(self, ctx, user_id):
         """
@@ -93,7 +94,7 @@ class Administration(commands.Cog, name="관리"):
         page = Paginator(bot=self.miya, message=msg, embeds=embeds)
         await page.start()
 
-    @checkout.command(name="단어")
+    @checkout.command(name="단어", hidden=True)
     @is_manager()
     async def _word(self, ctx, word):
         """
@@ -122,7 +123,7 @@ class Administration(commands.Cog, name="관리"):
         page = Paginator(bot=self.miya, message=msg, embeds=embeds)
         await page.start()
 
-    @commands.command(name="점검")
+    @commands.command(name="점검", hidden=True)
     @is_owner()
     async def _maintain(self,
                         ctx,
@@ -163,7 +164,7 @@ class Administration(commands.Cog, name="관리"):
                 await msg.edit(
                     content=f"<:cs_yes:659355468715786262> 점검 모드를 비활성화했습니다.")
 
-    @commands.command(name="SQL")
+    @commands.command(name="SQL", hidden=True)
     @is_owner()
     async def _sql(self, ctx, work, *, sql):
         """
@@ -188,7 +189,7 @@ class Administration(commands.Cog, name="관리"):
         else:
             raise commands.BadArgument
 
-    @commands.command(name="제한")
+    @commands.command(name="제한", hidden=True)
     @is_manager()
     async def _black_word(self, ctx, todo, *, word):
         """
@@ -222,7 +223,7 @@ class Administration(commands.Cog, name="관리"):
         else:
             raise commands.BadArgument
 
-    @commands.command(name="블랙")
+    @commands.command(name="블랙", hidden=True)
     @is_manager()
     async def blacklist_management(
             self,
@@ -269,7 +270,7 @@ class Administration(commands.Cog, name="관리"):
         else:
             raise commands.BadArgument
 
-    @commands.command(name="탈주")
+    @commands.command(name="탈주", hidden=True)
     @is_owner()
     async def _leave(self, ctx, guild_id: int):
         """
