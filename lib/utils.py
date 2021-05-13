@@ -245,7 +245,8 @@ class Check:
                 ctx.bot.user.avatar_url,
             )
         elif explicit["Explicit"]:
-            reason = f"부적절한 언행 **[Auto]** - {explicit["Word"]}"
+            word = explicit["Word"]
+            reason = f"부적절한 언행 **[Auto]** - {word}"
             admin = ctx.bot.user
             time = self.get.localize(datetime.datetime.utcnow())
             await self.black.user(0, ctx.author.id, admin, reason)
