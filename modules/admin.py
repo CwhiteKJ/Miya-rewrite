@@ -23,6 +23,9 @@ class Administration(commands.Cog, name="관리"):
     def is_manager():
         return commands.check(Check.mgr)
 
+    def is_owner():
+        return commands.check(Check.owner)
+
     @commands.command(name="비활성화")
     @is_manager()
     async def _remove(self, ctx, number: int):
@@ -120,7 +123,7 @@ class Administration(commands.Cog, name="관리"):
         await page.start()
 
     @commands.command(name="점검")
-    @commands.is_owner()
+    @is_owner()
     async def _maintain(self,
                         ctx,
                         *,
@@ -161,7 +164,7 @@ class Administration(commands.Cog, name="관리"):
                     content=f"<:cs_yes:659355468715786262> 점검 모드를 비활성화했습니다.")
 
     @commands.command(name="SQL")
-    @commands.is_owner()
+    @is_owner()
     async def _sql(self, ctx, work, *, sql):
         """
         미야야 SQL < fetch / commit > < SQL 명령 >
@@ -267,7 +270,7 @@ class Administration(commands.Cog, name="관리"):
             raise commands.BadArgument
 
     @commands.command(name="탈주")
-    @commands.is_owner()
+    @is_owner()
     async def _leave(self, ctx, guild_id: int):
         """
         미야야 탈주 < ID >
