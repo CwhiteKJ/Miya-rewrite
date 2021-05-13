@@ -20,11 +20,17 @@ class Administration(commands.Cog, name="관리"):
     def is_manager():
         return commands.check(Check.mgr)
 
+    @commands.command(name="비활성화")
+    @is_manager()
+    async def _remove(self, ctx, number: int):
+        await sql(1, f"UPDATE * SET `disabled` = 'true` WHERE `no` = '{number}'")
+        await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
+
     @commands.command(name="점검")
     @commands.is_owner()
-    async def _maintain(self, ctx, *, reason: typing.Optional[str]):
+    async def _maintain(self, ctx, *, reason: typing.Optional[str] = "점검 중입니다."):
         """
-        미야야 점검 < 사유 >
+        미야야 점검 [ 사유 ]
 
 
         점검 모드를 관리합니다.
@@ -95,8 +101,6 @@ class Administration(commands.Cog, name="관리"):
                     "제한 기록",
                     self.miya.user.avatar_url,
                 )
-            else:
-                await ctx.message.add_reaction("<:cs_no:659355468816187405>")
         elif todo == "삭제":
             result = await sql(1, 
                 f"DELETE FROM `forbidden` WHERE `word` = '{word}'")
@@ -107,8 +111,6 @@ class Administration(commands.Cog, name="관리"):
                     "제한 기록",
                     self.miya.user.avatar_url,
                 )
-            else:
-                await ctx.message.add_reaction("<:cs_no:659355468816187405>")
         else:
             raise commands.BadArgument
 
