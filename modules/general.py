@@ -1,19 +1,21 @@
 import asyncio
 import datetime
 import locale
+import os
 import random
 import typing
-import psutil
-import os
 
 import aiohttp
 import discord
-from discord import Webhook, AsyncWebhookAdapter
 import koreanbots
+import psutil
+from discord import AsyncWebhookAdapter
+from discord import Webhook
 from discord.ext import commands
 
-from lib.utils import sql
 from lib import utils
+from lib.utils import sql
+
 Get = utils.Get()
 
 locale.setlocale(locale.LC_ALL, "")
@@ -22,7 +24,6 @@ locale.setlocale(locale.LC_ALL, "")
 class General(commands.Cog, name="일반"):
     def __init__(self, miya):
         self.miya = miya
-    
 
     @commands.command(name="핑")
     async def ping(self, ctx):
@@ -37,12 +38,15 @@ class General(commands.Cog, name="일반"):
         last_time = datetime.datetime.utcnow()
         asdf = str(last_time - first_time)[6:]
         msg_latency = round(float(asdf) * 1000, 2)
-        uptime = datetime.datetime.now() - datetime.datetime.fromtimestamp(psutil.Process(os.getpid()).create_time())
+        uptime = datetime.datetime.now() - datetime.datetime.fromtimestamp(
+            psutil.Process(os.getpid()).create_time())
         shard = self.miya.get_shard(ctx.guild.shard_id)
         bot_latency = round(shard.latency * 1000, 2)
         embed = discord.Embed(color=0x5FE9FF,
                               timestamp=datetime.datetime.utcnow())
-        embed.add_field(name="API 지연 시간", value=f"{bot_latency}ms", inline=False)
+        embed.add_field(name="API 지연 시간",
+                        value=f"{bot_latency}ms",
+                        inline=False)
         embed.add_field(name="메시지 지연 시간",
                         value=f"{msg_latency}ms",
                         inline=False)
@@ -162,9 +166,10 @@ class General(commands.Cog, name="일반"):
         async with ctx.channel.typing():
             embed = discord.Embed(title=f"{ctx.guild.name} 정보 및 미야 설정",
                                   color=0x5FE9FF)
-            guilds = await sql(0,
-                f"SELECT * FROM `guilds` WHERE `guild` = '{ctx.guild.id}'")
-            memberNoti = await sql(0,
+            guilds = await sql(
+                0, f"SELECT * FROM `guilds` WHERE `guild` = '{ctx.guild.id}'")
+            memberNoti = await sql(
+                0,
                 f"SELECT * FROM `membernoti` WHERE `guild` = '{ctx.guild.id}'")
             muteRole = "설정되어 있지 않아요!"
             memberCh = "설정되어 있지 않아요!"
@@ -177,10 +182,11 @@ class General(commands.Cog, name="일반"):
                 channel = ctx.guild.get_channel(int(memberNoti[0][1]))
                 if channel is not None:
                     memberCh = channel.mention
-            if guilds[0][1] != 'None':
+            if guilds[0][1] != "None":
                 async with aiohttp.ClientSession() as session:
                     try:
-                        webhook = Webhook.from_url(guilds[0][1], adapter=AsyncWebhookAdapter(session))
+                        webhook = Webhook.from_url(
+                            guilds[0][1], adapter=AsyncWebhookAdapter(session))
                         channel = webhook.channel
                         if channel is not None:
                             logCh = channel.mention

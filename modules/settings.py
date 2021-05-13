@@ -1,11 +1,11 @@
+import asyncio
 import locale
 
 import discord
 from discord.ext import commands
 
-from lib.utils import sql
 from lib import config
-import asyncio
+from lib.utils import sql
 
 locale.setlocale(locale.LC_ALL, "")
 
@@ -13,7 +13,7 @@ locale.setlocale(locale.LC_ALL, "")
 class Settings(commands.Cog, name="설정"):
     def __init__(self, miya):
         self.miya = miya
-    
+
     @commands.command(name="가입", aliases=["등록"])
     async def _register(self, ctx):
         """
@@ -22,8 +22,8 @@ class Settings(commands.Cog, name="설정"):
 
         미야의 서비스에 이용 약관을 동의하고 등록합니다.
         """
-        rows = await sql(0,
-            f"SELECT * FROM `users` WHERE `user` = '{ctx.author.id}'")
+        rows = await sql(
+            0, f"SELECT * FROM `users` WHERE `user` = '{ctx.author.id}'")
         if not rows:
             embed = discord.Embed(
                 title="미야 이용 약관에 동의하시겠어요?",
@@ -55,8 +55,9 @@ class Settings(commands.Cog, name="설정"):
                     except:
                         pass
                     await register_msg.delete()
-                    result = await self.miya.sql(1,
-                        f"INSERT INTO `users`(`user`, `money`) VALUES('{ctx.author.id}', '500')"
+                    result = await self.miya.sql(
+                        1,
+                        f"INSERT INTO `users`(`user`, `money`) VALUES('{ctx.author.id}', '500')",
                     )
                     if result == "SUCCESS":
                         await ctx.reply(
@@ -85,8 +86,9 @@ class Settings(commands.Cog, name="설정"):
             )
         else:
             async with ctx.channel.typing():
-                result = await sql(1,
-                    f"UPDATE `guilds` SET `muteRole` = '{role.id}' WHERE `guild` = '{ctx.guild.id}'"
+                result = await sql(
+                    1,
+                    f"UPDATE `guilds` SET `muteRole` = '{role.id}' WHERE `guild` = '{ctx.guild.id}'",
                 )
                 if result == "SUCCESS":
                     for channel in ctx.guild.text_channels:
@@ -150,9 +152,17 @@ class Settings(commands.Cog, name="설정"):
                             f"<:cs_settings:659355468992610304> {channel.mention} 채널에 미야 지원 서버의 공지 채널을 팔로우했어요.\n \n*미야의 공지를 더 이상 받고 싶지 않다면 서버의 연동 설정에서 팔로우를 취소해주세요!*"
                         )
             elif what == "로그":
-                webhook = await channel.create_webhook(name="미야 로그", avatar=self.miya.user.avatar_url, reason="미야 로그 설정")
-                await sql(1, f"UPDATE `guilds` SET `eventLog` = '{webhook.url}' WHERE `guild` = '{ctx.guild.id}'")
-                await ctx.reply(f"<:cs_settings:659355468992610304> {channel.mention} 채널에 미야 지원 서버의 공지 채널을 팔로우했어요.")
+                webhook = await channel.create_webhook(
+                    name="미야 로그",
+                    avatar=self.miya.user.avatar_url,
+                    reason="미야 로그 설정")
+                await sql(
+                    1,
+                    f"UPDATE `guilds` SET `eventLog` = '{webhook.url}' WHERE `guild` = '{ctx.guild.id}'",
+                )
+                await ctx.reply(
+                    f"<:cs_settings:659355468992610304> {channel.mention} 채널에 미야 지원 서버의 공지 채널을 팔로우했어요."
+                )
 
     @commands.command(name="링크차단")
     @commands.has_permissions(manage_guild=True)
@@ -166,16 +176,18 @@ class Settings(commands.Cog, name="설정"):
         """
         async with ctx.channel.typing():
             if what == "켜기":
-                result = await sql(1,
-                    f"UPDATE `guilds` SET `linkFiltering` = 'true' WHERE `guild` = '{ctx.guild.id}'"
+                result = await sql(
+                    1,
+                    f"UPDATE `guilds` SET `linkFiltering` = 'true' WHERE `guild` = '{ctx.guild.id}'",
                 )
                 if result == "SUCCESS":
                     await ctx.reply(
                         f"<:cs_on:659355468682231810> 링크 차단 기능을 활성화했어요!\n특정 채널에서만 이 기능을 끄고 싶으시다면 채널 주제에 `=무시`라는 단어를 넣어주세요."
                     )
             elif what == "끄기":
-                result = await sql(1,
-                    f"UPDATE `guilds` SET `linkFiltering` = 'false' WHERE `guild` = '{ctx.guild.id}'"
+                result = await sql(
+                    1,
+                    f"UPDATE `guilds` SET `linkFiltering` = 'false' WHERE `guild` = '{ctx.guild.id}'",
                 )
                 if result == "SUCCESS":
                     await ctx.reply(
@@ -201,8 +213,9 @@ class Settings(commands.Cog, name="설정"):
             elif name == "퇴장":
                 value = "remove_msg"
             if value is not None:
-                result = await sql(1,
-                    f"UPDATE `membernoti` SET `{value}` = '{message}' WHERE `guild` = '{ctx.guild.id}'"
+                result = await sql(
+                    1,
+                    f"UPDATE `membernoti` SET `{value}` = '{message}' WHERE `guild` = '{ctx.guild.id}'",
                 )
                 if result == "SUCCESS":
                     a = message.replace("{member}", str(ctx.author.mention))
