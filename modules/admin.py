@@ -38,7 +38,7 @@ class Administration(commands.Cog, name="관리"):
     
     @commands.command(name="활성화")
     @is_manager()
-    async def _remove(self, ctx, number: int):
+    async def _active(self, ctx, number: int):
         """
         미야야 활성화 < 번호 >
 
