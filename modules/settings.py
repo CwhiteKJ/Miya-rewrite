@@ -57,7 +57,7 @@ class Settings(commands.Cog, name="설정"):
                     await register_msg.delete()
                     result = await sql(
                         1,
-                        f"INSERT INTO `users`(`user`, `money`) VALUES('{ctx.author.id}', '500')",
+                        f"INSERT INTO `users`(`user`, `permission`, `money`) VALUES('{ctx.author.id}', 'User', '500')",
                     )
                     if result == "SUCCESS":
                         await ctx.reply(
