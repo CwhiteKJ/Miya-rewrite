@@ -66,7 +66,7 @@ class General(commands.Cog, name="일반"):
             )
         else:
             for cog in self.miya.cogs:
-                if cog.lower() == input.lower():
+                if str(cog) == input:
                     embed = discord.Embed(
                         title=f"{cog} 확장의 명령어",
                         description=self.miya.cogs[cog].__doc__,
