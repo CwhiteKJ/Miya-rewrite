@@ -24,7 +24,7 @@ class NoReg(commands.CheckFailure):
 class Maintaining(commands.CheckFailure):
     def __init__(self, reason):
         super().__init__(
-            f"<:cs_protect:659355468891947008> 지금은 미야와 대화하실 수 없어요.\n점검 중 : {reason}"
+            f"<:cs_protect:659355468891947008> 지금은 미야와 대화하실 수 없어요.\n```점검 중 : {reason}```"
         )
 
 async def sql(type: int, sql: str):
