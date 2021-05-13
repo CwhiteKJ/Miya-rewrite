@@ -31,7 +31,7 @@ def has_no_symbols():
 
 
 class CC(commands.Cog, name="기억"):
-    """미야를 똑똑하게 만들기 프로젝트"""
+    """[ 개발 중 ]미야를 똑똑하게 만들기 프로젝트"""
     def __init__(self, miya):
         self.miya = miya
 
