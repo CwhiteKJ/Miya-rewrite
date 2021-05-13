@@ -3,7 +3,7 @@ import locale
 import discord
 from discord.ext import commands
 
-from lib.utils import Hook, sql
+from lib.utils import sql
 from lib import config
 
 locale.setlocale(locale.LC_ALL, "")

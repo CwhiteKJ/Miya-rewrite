@@ -2,7 +2,14 @@ import discord
 from discord.ext import commands
 from lib import config
 import aiohttp
-from lib.utils import sql, Check, Forbidden, NoReg, Maintaining
+from lib import utils
+from lib.utils import sql, Forbidden, NoReg, Maintaining
+import locale
+
+locale.setlocale(locale.LC_ALL, "")
+
+Hook = utils.Hook()
+Check = utils.Check()
 
 def has_no_symbols():
     async def search(ctx):
@@ -56,7 +63,7 @@ class CC(commands.Cog, name="지식 및 배우기"):
                             response_msg = await r.json()
                     msg = response_msg["response"]["replies"][0]["text"]
                     if msg != "앗, 저 이번 달에 할 수 있는 말을 다 해버렸어요 🤐 다음 달까지 기다려주실거죠? ☹️":
-                        await self.miya.hook(config.Terminal,
+                        await Hook.terminal(0,
                             f"PINGPONG Builder >\nUser - {ctx.author} ({ctx.author.id})\nSent - {query}\nReceived - {msg}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
                             "명령어 처리 기록",
                             self.miya.user.avatar_url,

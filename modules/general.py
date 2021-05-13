@@ -11,7 +11,9 @@ import discord
 import koreanbots
 from discord.ext import commands
 
-from lib.utils import Get, sql
+from lib.utils import sql
+from lib import utils
+Get = utils.Get()
 
 locale.setlocale(locale.LC_ALL, "")
 

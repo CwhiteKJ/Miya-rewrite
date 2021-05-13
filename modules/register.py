@@ -3,6 +3,7 @@ import locale
 
 import discord
 from discord.ext import commands
+from lib.utils import sql
 
 
 locale.setlocale(locale.LC_ALL, "")
@@ -21,7 +22,7 @@ class DataManagement(commands.Cog, name="데이터 관리"):
 
         미야의 서비스에 이용 약관을 동의하고 등록합니다.
         """
-        rows = await self.miya.sql(0,
+        rows = await sql(0,
             f"SELECT * FROM `users` WHERE `user` = '{ctx.author.id}'")
         if not rows:
             embed = discord.Embed(

@@ -4,10 +4,13 @@ import typing
 
 import discord
 from discord.ext import commands
-from lib.utils import sql, Hook, Check
+from lib import utils
+from lib.utils import sql
 
 locale.setlocale(locale.LC_ALL, "")
 
+Hook = utils.Hook()
+Check = utils.Check()
 
 class Administration(commands.Cog, name="관리"):
     def __init__(self, miya):

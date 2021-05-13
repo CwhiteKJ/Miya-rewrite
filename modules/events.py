@@ -6,10 +6,12 @@ import locale
 import aiohttp
 import discord
 from discord.ext import commands
-from lib.utils import Hook, NoReg, Maintaining, Forbidden, sql
+from lib.utils import NoReg, Maintaining, Forbidden, sql
+from lib import utils
 
 locale.setlocale(locale.LC_ALL, "")
 
+Hook = utils.Hook()
 
 class Listeners(commands.Cog, name="이벤트 리스너"):
     def __init__(self, miya):
