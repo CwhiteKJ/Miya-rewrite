@@ -4,8 +4,9 @@ import discord
 import koreanbots
 from discord.ext import commands
 from lib import config
-from lib.utils import Check
+from lib import utils
 
+Check = utils.Check()
 
 locale.setlocale(locale.LC_ALL, "")
 
