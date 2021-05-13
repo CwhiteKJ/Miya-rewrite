@@ -9,7 +9,8 @@ from discord.ext import commands
 from lib.utils import sql
 
 
-class Logger(commands.Cog):
+class Logger(commands.Cog, name="기록장"):
+    """미야의 이벤트 로그를 남기기 3분 강의"""
     def __init__(self, bot):
         self.bot = bot
 
