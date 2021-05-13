@@ -268,7 +268,7 @@ class Check:
                 "명령어 처리 기록",
                 ctx.bot.user.avatar_url,
             )
-        elif not users and ctx.command.name != "가입":
+        elif not user and ctx.command.name != "가입":
             await self.hook.terminal(
                 0,
                 f"Cancelled >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
