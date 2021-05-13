@@ -23,7 +23,7 @@ class Administration(commands.Cog, name="관리"):
     @commands.command(name="비활성화")
     @is_manager()
     async def _remove(self, ctx, number: int):
-        await sql(1, f"UPDATE * SET `disabled` = 'true` WHERE `no` = '{number}'")
+        await sql(1, f"UPDATE `cc` SET `disabled` = 'true` WHERE `no` = '{number}'")
         await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
 
     @commands.command(name="점검")
@@ -48,13 +48,13 @@ class Administration(commands.Cog, name="관리"):
         else:
             if str(reaction.emoji) == "<:cs_yes:659355468715786262>":
                 operation = 'true'
+                await sql(1, f"UPDATE `miya` SET `maintained` = '{operation}'")
+                await sql(1, f"UPDATE `miya` SET `mtr` = '{reason}'")
                 await msg.edit(content=f"<:cs_yes:659355468715786262> 점검 모드를 활성화했습니다.")
-                await sql(1, f"UPDATE * SET `maintained` = '{operation}'")
-                await sql(1, f"UPDATE * SET `mtr` = '{reason}'")
             else:
                 operation = 'false'
+                await sql(1, f"UPDATE `miya` SET `maintained` = '{operation}'")
                 await msg.edit(content=f"<:cs_yes:659355468715786262> 점검 모드를 비활성화했습니다.")
-                await sql(1, f"UPDATE * SET `maintained` = '{operation}'")
 
 
     @commands.command(name="SQL")
