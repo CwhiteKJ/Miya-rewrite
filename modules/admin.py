@@ -103,11 +103,13 @@ class Administration(commands.Cog, name="미야 유지보수"):
                          f"SELECT * FROM `users` WHERE `user` = '{user.id}'")
         if not rows:
             raise commands.BadArgument
+        if permission not in ["Administrator", "Maintainer", "User", "Stranger", "Offender"]:
+            raise commands.BadArgument
         await sql(
             1,
             f"UPDATE `users` SET `permission` = '{permission}' WHERE `user` = '{user.id}'",
         )
-        await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
+        await ctx.reply(f"🎬 **{user}**의 권한이 업데이트되었어요.\n이전 권한 - {rows[0][1]}, 변경된 권한 - {permission}")
 
     @commands.command(name="비활성화", hidden=True)
     @is_manager()
@@ -121,9 +123,11 @@ class Administration(commands.Cog, name="미야 유지보수"):
         rows = await sql(0, f"SELECT * FROM `cc` WHERE `no` = '{number}'")
         if not rows:
             raise commands.BadArgument
+        if rows[0][4] == "true":
+            raise commands.BadArgument
         await sql(
             1, f"UPDATE `cc` SET `disabled` = 'true' WHERE `no` = '{number}'")
-        await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
+        await ctx.reply(f"🎬 #{rows[0][0]}의 {rows[0][1]}, 비활성화했어요.")
 
     @commands.command(name="활성화", hidden=True)
     @is_manager()
@@ -137,9 +141,11 @@ class Administration(commands.Cog, name="미야 유지보수"):
         rows = await sql(0, f"SELECT * FROM `cc` WHERE `no` = '{number}'")
         if not rows:
             raise commands.BadArgument
+        if rows[0][4] == "false":
+            raise commands.BadArgument
         await sql(
             1, f"UPDATE `cc` SET `disabled` = 'false' WHERE `no` = '{number}'")
-        await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
+        await ctx.reply(f"🎬 #{rows[0][0]}의 {rows[0][1]}, 다시 활성화했어요.")
 
     @commands.group(name="조회", hidden=True)
     @is_manager()
@@ -245,12 +251,12 @@ class Administration(commands.Cog, name="미야 유지보수"):
                 await sql(1, f"UPDATE `miya` SET `maintained` = '{operation}'")
                 await sql(1, f"UPDATE `miya` SET `mtr` = '{reason}'")
                 await msg.edit(
-                    content=f"<:cs_yes:659355468715786262> 점검 모드를 활성화했습니다.")
+                    content=f"<:cs_yes:659355468715786262> 점검 모드를 활성화했어요!")
             else:
                 operation = "false"
                 await sql(1, f"UPDATE `miya` SET `maintained` = '{operation}'")
                 await msg.edit(
-                    content=f"<:cs_yes:659355468715786262> 점검 모드를 비활성화했습니다.")
+                    content=f"<:cs_yes:659355468715786262> 점검 모드를 비활성화했어요!")
 
     @commands.command(name="SQL", hidden=True)
     @is_owner()
@@ -267,7 +273,7 @@ class Administration(commands.Cog, name="미야 유지보수"):
             for row in rows:
                 a += f"{row}\n"
             if len(a) > 1900:
-                await ctx.reply(f"{a[:1900]}\n메시지 길이 제한으로 1900자까지만 출력되었습니다.")
+                await ctx.reply(f"{a[:1900]}\n메시지 길이 제한으로 1900자까지만 출력되었어요.")
                 print(a)
             else:
                 await ctx.reply(a)
@@ -288,8 +294,10 @@ class Administration(commands.Cog, name="미야 유지보수"):
         """
         if todo == "추가":
             await self.black.word(ctx, 0, word)
+            await ctx.reply(f"🎬 이제 `{word}` 단어를 사용 시 자동으로 차단돼요.")
         elif todo == "삭제":
             await self.black.word(ctx, 1, word)
+            await ctx.reply(f"🎬 이제 `{word}` 단어를 더 이상 필터링하지 않아요.")
         else:
             raise commands.BadArgument
 
@@ -311,8 +319,10 @@ class Administration(commands.Cog, name="미야 유지보수"):
         """
         if todo == "추가":
             await self.black.user(ctx, 0, user, reason)
+            await ctx.reply(f"🎬 **{user}**의 권한이 `Offender`로 업데이트되었어요.")
         elif todo == "삭제":
             await self.black.user(ctx, 1, user, reason)
+            await ctx.reply(f"🎬 **{user}**의 권한이 `Stranger`로 업데이트되었어요.")
         else:
             raise commands.BadArgument
 
@@ -328,7 +338,7 @@ class Administration(commands.Cog, name="미야 유지보수"):
         guild = self.miya.get_guild(int(guild_id))
         if guild is not None:
             await guild.leave()
-            await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
+            await ctx.reply(f"🎬 **{guild.name}** 서버에서 퇴장했어요.")
         else:
             await ctx.reply("<:cs_no:659355468816187405> 서버를 발견하지 못했어요.")
 
