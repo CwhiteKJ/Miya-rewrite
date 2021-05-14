@@ -41,7 +41,7 @@ class Miya(commands.AutoShardedBot):
                 uri = post['key']
                 return f'https://hastebin.com/{uri}'
         except aiohttp.ClientResponseError:
-            discord.File(io.StringIO(content), filename='Traceback.txt'
+            return discord.File(io.StringIO(content), filename='Traceback.txt')
 
 
 intents = discord.Intents(
