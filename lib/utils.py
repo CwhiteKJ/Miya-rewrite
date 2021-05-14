@@ -150,7 +150,7 @@ class Blacklisting:
         elif task == 1:
             await sql(
                 1,
-                f"UPDATE `users` SET `permission` = 'Stranger' WHERE `id` = '{user.id}'",
+                f"UPDATE `users` SET `permission` = 'Stranger' WHERE `user` = '{user.id}'",
             )
             await self.hook.terminal(
                 1,
