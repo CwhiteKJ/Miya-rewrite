@@ -16,7 +16,7 @@ locale.setlocale(locale.LC_ALL, "")
 Check = utils.Check()
 
 
-class Administration(commands.Cog, name="미야 유지보수"):
+class Administration(commands.Cog, name="디버그"):
     """미야의 유지 관리 및 보수에 사용되는 것들"""
     def __init__(self, miya):
         self.miya = miya
@@ -28,67 +28,21 @@ class Administration(commands.Cog, name="미야 유지보수"):
     def is_owner():
         return commands.check(Check.owner)
 
-    @commands.command(name="재시작", hidden=True)
+    @commands.command(name="탈주", hidden=True)
     @is_owner()
-    async def _restart(self, ctx):
+    async def _leave(self, ctx, guild_id: int):
         """
-        미야야 재시작
+        미야야 탈주 < ID >
 
 
-        현재 프로세스를 완전히 닫고 재시작합니다.
+        지정한 서버에서 미야가 나갑니다.
         """
-        msg = await ctx.reply(
-            f":grey_question: 미야를 정말로 재시작하시겠어요? 진행 중이던 작업이 사라질 수 있어요!\n<:cs_yes:659355468715786262> - 네\n<:cs_no:659355468816187405> - 아니오"
-        )
-        await msg.add_reaction("<:cs_yes:659355468715786262>")
-        await msg.add_reaction("<:cs_no:659355468816187405>")
-
-        def check(reaction, user):
-            return reaction.message.id == msg.id and user == ctx.author
-
-        try:
-            reaction, user = await self.miya.wait_for("reaction_add",
-                                                      timeout=30,
-                                                      check=check)
-        except:
-            await msg.delete()
+        guild = self.miya.get_guild(int(guild_id))
+        if guild is not None:
+            await guild.leave()
+            await ctx.reply(f"🎬 **{guild.name}** 서버에서 퇴장했어요.")
         else:
-            if str(reaction.emoji) == "<:cs_yes:659355468715786262>":
-                await msg.edit(content="🎬 미야가 곧 재시작됩니다...")
-                os.execl(sys.executable, sys.executable, *sys.argv)
-            else:
-                await msg.delete()
-
-    @commands.command(name="종료", hidden=True)
-    @is_owner()
-    async def _shutdown(self, ctx):
-        """
-        미야야 종료
-
-
-        미야를 로그아웃시키고 프로세스를 닫습니다.
-        """
-        msg = await ctx.reply(
-            f":grey_question: 미야를 정말로 종료하시겠어요? 진행 중이던 작업이 사라질 수 있어요!\n<:cs_yes:659355468715786262> - 예\n<:cs_no:659355468816187405> - 아니오"
-        )
-        await msg.add_reaction("<:cs_yes:659355468715786262>")
-        await msg.add_reaction("<:cs_no:659355468816187405>")
-
-        def check(reaction, user):
-            return reaction.message.id == msg.id and user == ctx.author
-
-        try:
-            reaction, user = await self.miya.wait_for("reaction_add",
-                                                      timeout=30,
-                                                      check=check)
-        except:
-            await msg.delete()
-        else:
-            if str(reaction.emoji) == "<:cs_yes:659355468715786262>":
-                await msg.edit(content="🎬 미야가 곧 종료됩니다...")
-                await self.miya.logout()
-            else:
-                await msg.delete()
+            await ctx.reply("<:cs_no:659355468816187405> 서버를 발견하지 못했어요.")
 
     @commands.command(name="권한", hidden=True)
     @is_owner()
@@ -119,41 +73,48 @@ class Administration(commands.Cog, name="미야 유지보수"):
             f"🎬 **{user}**의 권한이 업데이트되었어요.\n이전 권한 - `{rows[0][1]}`, 변경된 권한 - `{permission}`"
         )
 
-    @commands.command(name="비활성화", hidden=True)
+    @commands.command(name="블랙", hidden=True)
     @is_manager()
-    async def _remove(self, ctx, number: int):
+    async def blacklist_management(
+        self,
+        ctx,
+        todo,
+        user: discord.User,
+        *,
+        reason: typing.Optional[str] = "사유가 지정되지 않았습니다.",
+    ):
         """
-        미야야 비활성화 < 번호 >
+        미야야 블랙 < 추가 / 삭제 > < 유저 > [ 사유 ]
 
 
-        가르쳐진 지식을 비활성화합니다.
+        유저의 미야 이용을 제한합니다.
         """
-        rows = await sql(0, f"SELECT * FROM `cc` WHERE `no` = '{number}'")
-        if not rows:
+        if todo == "추가":
+            await self.black.user(ctx, 0, user, reason)
+            await ctx.reply(f"🎬 **{user}**의 권한이 `Offender`로 업데이트되었어요.")
+        elif todo == "삭제":
+            await self.black.user(ctx, 1, user, reason)
+            await ctx.reply(f"🎬 **{user}**의 권한이 `Stranger`로 업데이트되었어요.")
+        else:
             raise commands.BadArgument
-        if rows[0][4] == "true":
-            raise commands.BadArgument
-        await sql(
-            1, f"UPDATE `cc` SET `disabled` = 'true' WHERE `no` = '{number}'")
-        await ctx.reply(f"🎬 #{rows[0][0]}의 {rows[0][1]}, 비활성화했어요.")
 
-    @commands.command(name="활성화", hidden=True)
+    @commands.command(name="제한", hidden=True)
     @is_manager()
-    async def _active(self, ctx, number: int):
+    async def _black_word(self, ctx, todo, *, word):
         """
-        미야야 활성화 < 번호 >
+        미야야 제한 < 추가 / 삭제 > < 단어 >
 
 
-        비활성화된 지식을 활성화합니다.
+        자동 차단 단어를 관리합니다.
         """
-        rows = await sql(0, f"SELECT * FROM `cc` WHERE `no` = '{number}'")
-        if not rows:
+        if todo == "추가":
+            await self.black.word(ctx, 0, word)
+            await ctx.reply(f"🎬 이제 `{word}` 단어를 사용 시 자동으로 차단돼요.")
+        elif todo == "삭제":
+            await self.black.word(ctx, 1, word)
+            await ctx.reply(f"🎬 이제 `{word}` 단어를 더 이상 필터링하지 않아요.")
+        else:
             raise commands.BadArgument
-        if rows[0][4] == "false":
-            raise commands.BadArgument
-        await sql(
-            1, f"UPDATE `cc` SET `disabled` = 'false' WHERE `no` = '{number}'")
-        await ctx.reply(f"🎬 #{rows[0][0]}의 {rows[0][1]}, 다시 활성화했어요.")
 
     @commands.group(name="조회", hidden=True)
     @is_manager()
@@ -225,6 +186,42 @@ class Administration(commands.Cog, name="미야 유지보수"):
         page = Paginator(bot=self.miya, message=msg, embeds=embeds)
         await page.start()
 
+    @commands.command(name="활성화", hidden=True)
+    @is_manager()
+    async def _active(self, ctx, number: int):
+        """
+        미야야 활성화 < 번호 >
+
+
+        비활성화된 지식을 활성화합니다.
+        """
+        rows = await sql(0, f"SELECT * FROM `cc` WHERE `no` = '{number}'")
+        if not rows:
+            raise commands.BadArgument
+        if rows[0][4] == "false":
+            raise commands.BadArgument
+        await sql(
+            1, f"UPDATE `cc` SET `disabled` = 'false' WHERE `no` = '{number}'")
+        await ctx.reply(f"🎬 #{rows[0][0]}의 {rows[0][1]}, 다시 활성화했어요.")
+
+    @commands.command(name="비활성화", hidden=True)
+    @is_manager()
+    async def _remove(self, ctx, number: int):
+        """
+        미야야 비활성화 < 번호 >
+
+
+        가르쳐진 지식을 비활성화합니다.
+        """
+        rows = await sql(0, f"SELECT * FROM `cc` WHERE `no` = '{number}'")
+        if not rows:
+            raise commands.BadArgument
+        if rows[0][4] == "true":
+            raise commands.BadArgument
+        await sql(
+            1, f"UPDATE `cc` SET `disabled` = 'true' WHERE `no` = '{number}'")
+        await ctx.reply(f"🎬 #{rows[0][0]}의 {rows[0][1]}, 비활성화했어요.")
+
     @commands.command(name="점검", hidden=True)
     @is_owner()
     async def _maintain(self,
@@ -291,64 +288,67 @@ class Administration(commands.Cog, name="미야 유지보수"):
         else:
             raise commands.BadArgument
 
-    @commands.command(name="제한", hidden=True)
-    @is_manager()
-    async def _black_word(self, ctx, todo, *, word):
-        """
-        미야야 제한 < 추가 / 삭제 > < 단어 >
-
-
-        자동 차단 단어를 관리합니다.
-        """
-        if todo == "추가":
-            await self.black.word(ctx, 0, word)
-            await ctx.reply(f"🎬 이제 `{word}` 단어를 사용 시 자동으로 차단돼요.")
-        elif todo == "삭제":
-            await self.black.word(ctx, 1, word)
-            await ctx.reply(f"🎬 이제 `{word}` 단어를 더 이상 필터링하지 않아요.")
-        else:
-            raise commands.BadArgument
-
-    @commands.command(name="블랙", hidden=True)
-    @is_manager()
-    async def blacklist_management(
-        self,
-        ctx,
-        todo,
-        user: discord.User,
-        *,
-        reason: typing.Optional[str] = "사유가 지정되지 않았습니다.",
-    ):
-        """
-        미야야 블랙 < 추가 / 삭제 > < 유저 > [ 사유 ]
-
-
-        유저의 미야 이용을 제한합니다.
-        """
-        if todo == "추가":
-            await self.black.user(ctx, 0, user, reason)
-            await ctx.reply(f"🎬 **{user}**의 권한이 `Offender`로 업데이트되었어요.")
-        elif todo == "삭제":
-            await self.black.user(ctx, 1, user, reason)
-            await ctx.reply(f"🎬 **{user}**의 권한이 `Stranger`로 업데이트되었어요.")
-        else:
-            raise commands.BadArgument
-
-    @commands.command(name="탈주", hidden=True)
+    @commands.command(name="재시작", hidden=True)
     @is_owner()
-    async def _leave(self, ctx, guild_id: int):
+    async def _restart(self, ctx):
         """
-        미야야 탈주 < ID >
+        미야야 재시작
 
 
-        지정한 서버에서 미야가 나갑니다.
+        현재 프로세스를 완전히 닫고 재시작합니다.
         """
-        guild = self.miya.get_guild(int(guild_id))
-        if guild is not None:
-            await guild.leave()
-            await ctx.reply(f"🎬 **{guild.name}** 서버에서 퇴장했어요.")
+        msg = await ctx.reply(
+            f":grey_question: 미야를 정말로 재시작하시겠어요? 진행 중이던 작업이 사라질 수 있어요!\n<:cs_yes:659355468715786262> - 네\n<:cs_no:659355468816187405> - 아니오"
+        )
+        await msg.add_reaction("<:cs_yes:659355468715786262>")
+        await msg.add_reaction("<:cs_no:659355468816187405>")
+
+        def check(reaction, user):
+            return reaction.message.id == msg.id and user == ctx.author
+
+        try:
+            reaction, user = await self.miya.wait_for("reaction_add",
+                                                      timeout=30,
+                                                      check=check)
+        except:
+            await msg.delete()
         else:
-            await ctx.reply("<:cs_no:659355468816187405> 서버를 발견하지 못했어요.")
+            if str(reaction.emoji) == "<:cs_yes:659355468715786262>":
+                await msg.edit(content="🎬 미야가 곧 재시작됩니다...")
+                os.execl(sys.executable, sys.executable, *sys.argv)
+            else:
+                await msg.delete()
+
+    @commands.command(name="종료", hidden=True)
+    @is_owner()
+    async def _shutdown(self, ctx):
+        """
+        미야야 종료
+
+
+        미야를 로그아웃시키고 프로세스를 닫습니다.
+        """
+        msg = await ctx.reply(
+            f":grey_question: 미야를 정말로 종료하시겠어요? 진행 중이던 작업이 사라질 수 있어요!\n<:cs_yes:659355468715786262> - 예\n<:cs_no:659355468816187405> - 아니오"
+        )
+        await msg.add_reaction("<:cs_yes:659355468715786262>")
+        await msg.add_reaction("<:cs_no:659355468816187405>")
+
+        def check(reaction, user):
+            return reaction.message.id == msg.id and user == ctx.author
+
+        try:
+            reaction, user = await self.miya.wait_for("reaction_add",
+                                                      timeout=30,
+                                                      check=check)
+        except:
+            await msg.delete()
+        else:
+            if str(reaction.emoji) == "<:cs_yes:659355468715786262>":
+                await msg.edit(content="🎬 미야가 곧 종료됩니다...")
+                await self.miya.logout()
+            else:
+                await msg.delete()
 
 
 def setup(miya):
