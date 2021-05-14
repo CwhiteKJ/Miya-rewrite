@@ -15,18 +15,17 @@ from lib.utils import sql
 
 locale.setlocale(locale.LC_ALL, "")
 
-Hook = utils.Hook()
-Check = utils.Check()
-
 
 class Listeners(commands.Cog, name="이벤트 리스너"):
     """그게.. 확장은 확장인데 명령어가 없네?"""
     def __init__(self, miya):
         self.miya = miya
+        self.hook = utils.Hook()
+        self.check = utils.Check()
 
     @commands.Cog.listener()
     async def on_shard_disconnect(self, shard):
-        await Hook.terminal(
+        await self.hook.terminal(
             0,
             f"Shard Disconnected >\nShard ID - #{shard}",
             "샤드 기록",
@@ -35,7 +34,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
 
     @commands.Cog.listener()
     async def on_shard_resumed(self, shard):
-        await Hook.terminal(
+        await self.hook.terminal(
             0,
             f"Shard Resumed >\nShard ID - #{shard}",
             "샤드 기록",
@@ -49,7 +48,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
 
     @commands.Cog.listener()
     async def on_shard_connect(self, shard):
-        await Hook.terminal(
+        await self.hook.terminal(
             0,
             f"Shard Connected >\nShard ID - #{shard}",
             "샤드 기록",
@@ -79,7 +78,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                 or isinstance(error, commands.NotOwner)
                 or isinstance(error, commands.CheckFailure)):
             try:
-                p = await Check.identify(ctx)
+                p = await self.check.identify(ctx)
             except Exception as e:
                 if isinstance(e, Forbidden):
                     await ctx.reply(str(e), embed=e.embed)
@@ -119,7 +118,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                                 if (msg !=
                                         "앗, 저 이번 달에 할 수 있는 말을 다 해버렸어요 🤐 다음 달까지 기다려주실거죠? ☹️"
                                     ):
-                                    await Hook.terminal(
+                                    await self.hook.terminal(
                                         0,
                                         f"PINGPONG Builder >\nUser - {ctx.author} ({ctx.author.id})\nSent - {query}\nReceived - {msg}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
                                         "명령어 처리 기록",
@@ -206,7 +205,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                     f"<:cs_console:659355468786958356> `{usage}`(이)가 올바른 명령어에요!"
                 )
         else:
-            await Hook.terminal(
+            await self.hook.terminal(
                 0,
                 f"Error >\nContent - {ctx.message.content}\nException - {error}",
                 "명령어 처리 기록",
@@ -241,7 +240,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        await Hook.terminal(
+        await self.hook.terminal(
             0,
             f"Join >\nGuild - {guild.name} ({guild.id})",
             "서버 입퇴장 기록",
@@ -261,7 +260,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                 f"INSERT INTO `membernoti`(`guild`, `channel`, `join_msg`, `remove_msg`) VALUES('{guild.id}', '1234', '{default_join_msg}', '{default_quit_msg}')",
             )
             if g_result == "SUCCESS" and m_result == "SUCCESS":
-                await Hook.terminal(
+                await self.hook.terminal(
                     0,
                     f"Registered >\nGuild - {guild.name} ({guild.id})",
                     "서버 등록 기록",
@@ -285,7 +284,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                         embed=embed,
                     )
                 except:
-                    await Hook.terminal(
+                    await self.hook.terminal(
                         0,
                         f"Owner DM Failed >\nGuild - {guild.name} ({guild.id})",
                         "서버 입퇴장 기록",
@@ -299,13 +298,13 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                     f"<a:ban_guy:761149578216603668> 현재 {guild.name} 서버는 미야 이용이 제한되었어요, 자세한 내용은 `미야야 문의`를 사용해 문의해주세요.",
                 )
             except:
-                await Hook.terminal(
+                await self.hook.terminal(
                     0,
                     f"Owner DM Failed >\nGuild - {guild.name} ({guild.id})",
                     "서버 입퇴장 기록",
                     self.miya.user.avatar_url,
                 )
-            await Hook.terminal(
+            await self.hook.terminal(
                 0,
                 f"Blocked Guild >\nGuild - {guild.name} ({guild.id})\nOwner - {guild.owner} ({guild.owner.id})",
                 "서버 입퇴장 기록",
@@ -315,7 +314,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
-        await Hook.terminal(
+        await self.hook.terminal(
             0,
             f"Quit >\nGuild - {guild.name} ({guild.id})",
             "서버 입퇴장 기록",
@@ -342,7 +341,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                                           str(member.guild.member_count))
                         await channel.send(msg)
                     except Exception as e:
-                        await Hook.terminal(
+                        await self.hook.terminal(
                             0,
                             f"MemberNoti Failed >\nGuild - {member.guild.name} ({member.guild.id})\nException - {e}",
                             "유저 입퇴장 알림 기록",
@@ -369,7 +368,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                                           str(member.guild.member_count))
                         await channel.send(msg)
                     except Exception as e:
-                        await Hook.terminal(
+                        await self.hook.terminal(
                             0,
                             f"MemberNoti Failed >\nGuild - {member.guild.name} ({member.guild.id})\nException - {e}",
                             "유저 입퇴장 알림 기록",

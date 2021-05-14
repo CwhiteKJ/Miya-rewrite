@@ -13,8 +13,6 @@ from discord.ext import commands
 from lib import config
 from lib import utils
 
-Get = utils.Get()
-Check = utils.Check()
 
 locale.setlocale(locale.LC_ALL, "")
 
@@ -23,6 +21,7 @@ class General(commands.Cog, name="일반"):
     """일반적이고 다양한 기능들"""
     def __init__(self, miya):
         self.miya = miya
+        self.check = utils.Check()
 
     @commands.command(name="도움말", aliases=["도움", "명령어"])
     @commands.bot_has_permissions(embed_links=True)
@@ -71,7 +70,7 @@ class General(commands.Cog, name="일반"):
                         timestamp=datetime.datetime.utcnow(),
                     )
                     for command in self.miya.get_cog(cog).get_commands():
-                        if not command.hidden or Check.owner(ctx):
+                        if not command.hidden or self.check.owner(ctx):
                             embed.add_field(
                                 name=command.help.split("\n")[0],
                                 value=command.help.split("\n")[3],

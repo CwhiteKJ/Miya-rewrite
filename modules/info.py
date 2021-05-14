@@ -7,12 +7,12 @@ import aiohttp
 from lib.utils import sql
 from lib import utils
 
-Get = utils.Get()
 
 class Information(commands.Cog, name="정보"):
     """다양한 정보들을 제공하는 것들"""
     def __init__(self, miya):
         self.miya = miya
+        self.get = utils.Get()
 
     @commands.command(name="서버정보")
     async def _serverinfo(self, ctx):
@@ -88,7 +88,7 @@ class Information(commands.Cog, name="정보"):
                 discord.VerificationLevel.extreme:
                 "**매우 높음**\n휴대폰 인증이 완료된 Discord 계정이어야 해요.",
             }
-            time = Get.localize(ctx.guild.created_at)
+            time = self.get.localize(ctx.guild.created_at)
             embed.add_field(name="공지 채널",
                             value="📢 **서버의 연동 설정을 확인하세요!**",
                             inline=False)
@@ -162,7 +162,7 @@ class Information(commands.Cog, name="정보"):
         현재 한강의 수온을 출력합니다.
         """
         async with ctx.channel.typing():
-            result = await Get.hangang()
+            result = await self.get.hangang()
             embed = discord.Embed(
                 description=f"현재 한강의 온도는 `{result[0]}`도에요!\n`측정: {result[1]}`",
                 color=0x5FE9FF,
@@ -172,6 +172,38 @@ class Information(commands.Cog, name="정보"):
                 embed.set_footer(text="거 수온이 뜨듯하구먼!")
             else:
                 embed.set_footer(text="거 이거 완전 얼음장이구먼!")
+            await ctx.reply(embed=embed)
+
+    @commands.command(name="코로나")
+    async def _corona_info(self, ctx):
+        """
+        미야야 코로나
+        대한민국의 코로나 현황을 불러옵니다.
+        """
+        async with ctx.channel.typing():
+            _corona = await self.get.corona()
+            embed = discord.Embed(title="국내 코로나19 현황",
+                                  description="질병관리청 집계 기준",
+                                  color=0x5FE9FF)
+            embed.add_field(name="확진자",
+                            value=f"{_corona[0].split(')')[1]}명",
+                            inline=True)
+            embed.add_field(name="완치(격리 해제)",
+                            value=f"{_corona[1]}명",
+                            inline=True)
+            embed.add_field(name="치료 중", value=f"{_corona[2]}명", inline=True)
+            embed.add_field(name="사망", value=f"{_corona[3]}명", inline=True)
+            embed.add_field(name="정보 출처",
+                            value="[질병관리청](http://ncov.mohw.go.kr/)",
+                            inline=True)
+            embed.set_author(name="COVID-19",
+                             icon_url=self.miya.user.avatar_url)
+            embed.set_footer(
+                text="코로나19 감염이 의심되면 즉시 보건소 및 콜센터(전화1339)로 신고바랍니다.")
+            embed.set_thumbnail(
+                url=
+                "https://cdn.discordapp.com/attachments/746786600037384203/761404488023408640/unknown.png"
+            )
             await ctx.reply(embed=embed)
 
 def setup(miya):

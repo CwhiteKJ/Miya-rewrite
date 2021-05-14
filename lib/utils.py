@@ -112,6 +112,7 @@ class Get:
 class Blacklisting:
     def __init__(self):
         self.get = Get()
+        self.hook = Hook()
 
     async def user(self, ctx, task, user: discord.User, reason: str):
         time = self.get.localize(datetime.datetime.utcnow())
@@ -120,7 +121,7 @@ class Blacklisting:
                 1,
                 f"UPDATE `users` SET `permission` = 'Blocked'",
             )
-            await Hook.terminal(
+            await self.hook.terminal(
                 1,
                 f"Added Block >\nBlocked - {user.id}\nAdmin - {ctx.author} ({ctx.author.id})\nReason - {reason}",
                 "제한 기록",
@@ -144,7 +145,7 @@ class Blacklisting:
                 pass
         elif task == 1:
             await sql(1, f"UPDATE `users` SET `permission` = 'User' WHERE `id` = '{user.id}'")
-            await Hook.terminal(
+            await self.hook.terminal(
                 1,
                 f"Removed Block >\nUnblocked - {user.id}\nAdmin - {ctx.author} ({ctx.author.id})",
                 "제한 기록",
@@ -156,7 +157,7 @@ class Blacklisting:
     async def word(self, ctx, task, word):
         if task == 0:
             await sql(1, f"INSERT INTO `forbidden`(`word`) VALUES('{word}')")
-            await Hook.terminal(
+            await self.hook.terminal(
                 1,
                 f"New Forbidden >\nAdmin - {ctx.author} ({ctx.author.id})\nPhrase - {word}",
                 "제한 기록",
@@ -164,7 +165,7 @@ class Blacklisting:
             )
         elif task == 1:
             await sql(1, f"DELETE FROM `forbidden` WHERE `word` = '{word}'")
-            await Hook.terminal(
+            await self.hook.terminal(
                 1,
                 f"Removed Forbidden >\nAdmin - {ctx.author} ({ctx.author.id})\nPhrase - {word}",
                 "제한 기록",
