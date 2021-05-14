@@ -240,7 +240,7 @@ class Administration(commands.Cog, name="미야 유지보수"):
         reason: typing.Optional[str] = "사유가 지정되지 않았습니다.",
     ):
         """
-        미야야 블랙 < 추가 / 삭제 > < ID > [ 사유 ]
+        미야야 블랙 < 추가 / 삭제 > < 유저 > [ 사유 ]
 
 
         유저의 미야 이용을 제한합니다.
