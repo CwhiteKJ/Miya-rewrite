@@ -65,7 +65,7 @@ class Settings(commands.Cog, name="설정"):
                             1,
                             f"INSERT INTO `users`(`user`, `permission`, `money`) VALUES('{ctx.author.id}', 'User', '500')",
                         )
-                    elif rows[0][1] == "Unregistered":
+                    elif rows[0][1] == "Stranger":
                         await sql(
                             1,
                             f"UPDATE `users` SET `permission` = 'User' WHERE `user` = '{ctx.author.id}'",
