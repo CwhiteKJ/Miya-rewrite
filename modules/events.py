@@ -211,8 +211,8 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
             exc = getattr(error, 'original', error)
             lines = ''.join(traceback.format_exception(exc.__class__, exc, exc.__traceback__))
             lines = f'{ctx.command}에 발생한 예외를 무시합니다;\n{lines}'
-            record = await miya.record(lines)
-            channel = miya.get_channel(config.Debug)
+            record = await self.miya.record(lines)
+            channel = self.miya.get_channel(config.Debug)
             if isinstance(record, discord.File):
                 await channel.send(file=record)
             else:
