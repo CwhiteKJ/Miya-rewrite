@@ -197,7 +197,9 @@ class Check:
     async def block(self, ctx):
         user = await sql(
             0, f"SELECT * FROM `users` WHERE `user` = '{ctx.author.id}'")
-        if user[0][1] == "Offender":
+        if not user:
+            return False
+        elif user[0][1] == "Offender":
             return True
         return False
 
