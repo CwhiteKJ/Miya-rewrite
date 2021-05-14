@@ -120,7 +120,7 @@ class Blacklisting:
         if task == 0:
             await sql(
                 1,
-                f"UPDATE `users` SET `permission` = 'Blocked'",
+                f"UPDATE `users` SET `permission` = 'Offender'",
             )
             await self.hook.terminal(
                 1,
@@ -150,7 +150,7 @@ class Blacklisting:
         elif task == 1:
             await sql(
                 1,
-                f"UPDATE `users` SET `permission` = 'User' WHERE `id` = '{user.id}'"
+                f"UPDATE `users` SET `permission` = 'Stranger' WHERE `id` = '{user.id}'"
             )
             await self.hook.terminal(
                 1,
@@ -197,7 +197,7 @@ class Check:
     async def block(self, ctx):
         user = await sql(
             0, f"SELECT * FROM `users` WHERE `user` = '{ctx.author.id}'")
-        if user[0][1] == "Blocked":
+        if user[0][1] == "Offender":
             return True
         return False
 
@@ -297,7 +297,7 @@ class Check:
                 ctx.bot.user.avatar_url,
             )
             raise NoReg
-        elif user[0][1] == "Unregistered":
+        elif user[0][1] == "Stranger":
             await self.hook.terminal(
                 0,
                 f"Cancelled >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
