@@ -25,7 +25,11 @@ class Settings(commands.Cog, name="설정"):
         """
         rows = await sql(
             0, f"SELECT * FROM `users` WHERE `user` = '{ctx.author.id}'")
-        if not rows:
+        if rows and rows[0][1] == "User":
+            await ctx.reply(
+                f"<:cs_id:659355469034422282> 이미 등록되어 있는 유저에요.\n등록되지 않았는데 이 문구가 뜬다면 https://discord.gg/tu4NKbEEnn 로 문의해주세요."
+            )
+        else:
             embed = discord.Embed(
                 title="미야 이용 약관에 동의하시겠어요?",
                 description=
@@ -35,7 +39,6 @@ class Settings(commands.Cog, name="설정"):
             embed.set_author(name="서비스 등록", icon_url=self.miya.user.avatar_url)
             register_msg = await ctx.reply(embed=embed)
             async with ctx.channel.typing():
-
                 def check(msg):
                     return (msg.channel == ctx.channel
                             and msg.author == ctx.author
@@ -56,18 +59,19 @@ class Settings(commands.Cog, name="설정"):
                     except:
                         pass
                     await register_msg.delete()
-                    result = await sql(
-                        1,
-                        f"INSERT INTO `users`(`user`, `permission`, `money`) VALUES('{ctx.author.id}', 'User', '500')",
-                    )
-                    if result == "SUCCESS":
-                        await ctx.reply(
-                            f"<:cs_yes:659355468715786262> 가입 절차가 모두 완료되었어요! 이제 미야와 대화하실 수 있어요."
+                    if not rows:
+                        await sql(
+                            1,
+                            f"INSERT INTO `users`(`user`, `permission`, `money`) VALUES('{ctx.author.id}', 'User', '500')",
                         )
-        else:
-            await ctx.reply(
-                f"<:cs_id:659355469034422282> 이미 등록되어 있는 유저에요.\n등록되지 않았는데 이 문구가 뜬다면 https://discord.gg/tu4NKbEEnn 로 문의해주세요."
-            )
+                    elif rows[0][1] == "Unregistered":
+                        await sql(
+                            1,
+                            f"UPDATE `users` SET `permission` = 'User' WHERE `user` = '{ctx.author.id}'",
+                        )
+                    await ctx.reply(
+                        f"<:cs_yes:659355468715786262> 가입 절차가 모두 완료되었어요! 이제 미야와 대화하실 수 있어요."
+                    )
 
     @commands.command(name="뮤트설정")
     @commands.has_permissions(administrator=True)
