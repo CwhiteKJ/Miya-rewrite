@@ -36,7 +36,7 @@ class Economy(commands.Cog, name="경제"):
                 color=0x5FE9FF,
             )
             embed.add_field(name="가지고 있는 코인",
-                            value=f"{rows[0][1]}개",
+                            value=f"{rows[0][2]}개",
                             inline=False)
             embed.add_field(name="곧 더 많은 기능이 찾아옵니다...",
                             value="새로운 기능도 많이 기대해주세요!",
@@ -57,7 +57,7 @@ class Economy(commands.Cog, name="경제"):
         """
         rows = await sql(
             0, f"SELECT * FROM `users` WHERE `user` = '{ctx.author.id}'")
-        plus = int(rows[0][1]) + 300
+        plus = int(rows[0][2]) + 300
         await sql(
             1,
             f"UPDATE `users` SET `money` = '{plus}' WHERE `user` = '{ctx.author.id}'"
@@ -75,12 +75,12 @@ class Economy(commands.Cog, name="경제"):
         rows = await sql(
             0, f"SELECT * FROM `users` WHERE `user` = '{ctx.author.id}'")
         if money in ["모두", "전체", "올인"]:
-            money = rows[0][1]
+            money = rows[0][2]
         elif money.isdecimal() is not True:
             raise commands.BadArgument
 
-        if int(rows[0][1]) == 0 or int(rows[0][1]) < int(money):
-            await ctx.reply(f"🍋 코인이 부족해요! 현재 코인 : {rows[0][1]}개")
+        if int(rows[0][2]) == 0 or int(rows[0][2]) < int(money):
+            await ctx.reply(f"🍋 코인이 부족해요! 현재 코인 : {rows[0][2]}개")
         else:
             user1 = random.randint(1, 6)
             user2 = random.randint(1, 6)
@@ -97,8 +97,8 @@ class Economy(commands.Cog, name="경제"):
                 )
                 embed.set_footer(text="모두 잃어버린 나")
                 minus = int(money) * (bot - user)
-                if minus < int(rows[0][1]):
-                    rest = int(rows[0][1]) - minus
+                if minus < int(rows[0][2]):
+                    rest = int(rows[0][2]) - minus
                 else:
                     rest = 0
             elif user == bot:
@@ -108,7 +108,7 @@ class Economy(commands.Cog, name="경제"):
                     color=0x333333,
                 )
                 embed.set_footer(text="그래도 잃지는 않은 나")
-                rest = int(rows[0][1])
+                rest = int(rows[0][2])
             elif user > bot:
                 embed = discord.Embed(
                     title=f"🎲 {ctx.author.name}님의 주사위 도박 결과",
@@ -117,7 +117,7 @@ class Economy(commands.Cog, name="경제"):
                 )
                 embed.set_footer(text="봇을 상대로 모든 것을 가져간 나")
                 plus = int(money) * (bot - user)
-                rest = int(rows[0][1]) + plus
+                rest = int(rows[0][2]) + plus
             embed.set_author(name="카케구루이", icon_url=self.miya.user.avatar_url)
             embed.set_thumbnail(
                 url=ctx.author.avatar_url_as(static_format="png", size=2048))
@@ -146,11 +146,11 @@ class Economy(commands.Cog, name="경제"):
         rows = await sql(
             0, f"SELECT * FROM `users` WHERE `user` = '{ctx.author.id}'")
         if money in ["모두", "전체", "올인"]:
-            money = rows[0][1]
+            money = rows[0][2]
         elif money.isdecimal() is not True:
             raise commands.BadArgument
 
-        if int(rows[0][1]) == 0 or int(rows[0][1]) < int(money):
+        if int(rows[0][2]) == 0 or int(rows[0][2]) < int(money):
             await ctx.reply(f"🍋 코인이 부족해요! 현재 코인 : {rows[0][1]}개")
         else:
             msg = await ctx.reply(
@@ -177,7 +177,7 @@ class Economy(commands.Cog, name="경제"):
                     list = ["짝", 2, 4, 6, 8, 10]
                 result = random.randint(1, 10)
                 if result in list:
-                    receive = int(rows[0][1]) + int(money)
+                    receive = int(rows[0][2]) + int(money)
                     await sql(
                         1,
                         f"UPDATE `users` SET `money` = '{receive}' WHERE `user` = {ctx.author.id}",
@@ -187,7 +187,7 @@ class Economy(commands.Cog, name="경제"):
                         f"🕹 축하드려요! 뭐, 이런 게 초보자의 행운이려나요.\n당신의 선택 - `{list[0]}`, 결과 - `{result}`"
                     )
                 else:
-                    receive = int(rows[0][1]) - int(money)
+                    receive = int(rows[0][2]) - int(money)
                     await sql(
                         1,
                         f"UPDATE `users` SET `money` = '{receive}' WHERE `user` = {ctx.author.id}",
