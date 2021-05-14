@@ -116,7 +116,7 @@ class Administration(commands.Cog, name="미야 유지보수"):
             f"UPDATE `users` SET `permission` = '{permission}' WHERE `user` = '{user.id}'",
         )
         await ctx.reply(
-            f"🎬 **{user}**의 권한이 업데이트되었어요.\n이전 권한 - {rows[0][1]}, 변경된 권한 - {permission}"
+            f"🎬 **{user}**의 권한이 업데이트되었어요.\n이전 권한 - `{rows[0][1]}`, 변경된 권한 - `{permission}`"
         )
 
     @commands.command(name="비활성화", hidden=True)
