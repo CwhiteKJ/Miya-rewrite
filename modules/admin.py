@@ -54,7 +54,10 @@ class Administration(commands.Cog, name="미야 유지보수"):
             await msg.delete()
         else:
             if str(reaction.emoji) == "<:cs_yes:659355468715786262>":
+                await msg.edit(content="🎬 미야가 곧 재시작됩니다...")
                 os.execl(sys.executable, sys.executable, *sys.argv)
+            else:
+                await msg.delete()
 
     @commands.command(name="종료", hidden=True)
     @is_owner()
@@ -82,7 +85,10 @@ class Administration(commands.Cog, name="미야 유지보수"):
             await msg.delete()
         else:
             if str(reaction.emoji) == "<:cs_yes:659355468715786262>":
+                await msg.edit(content="🎬 미야가 곧 종료됩니다...")
                 await self.miya.logout()
+            else:
+                await msg.delete()
 
     @commands.command(name="권한", hidden=True)
     @is_owner()
