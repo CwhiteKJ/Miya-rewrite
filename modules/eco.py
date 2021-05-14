@@ -131,24 +131,6 @@ class Economy(commands.Cog, name="경제"):
             )
             await ctx.reply(embed=embed)
 
-    @commands.command(name="매수")
-    @in_guild()
-    async def _buy(self, ctx, stock, value):
-        if stock not in ["Simplified", "Qualified", "Sharklified"]:
-            raise commands.BadArgument
-        else:
-            user = (await sql(
-                0,
-                f"SELECT * FROM `users` WHERE `user` = '{ctx.author.id}'"))[0]
-            stat = (await
-                    sql(0,
-                        f"SELECT * FROM `stocks` WHERE `name` = '{stock}'"))[0]
-            if value in ["모두", "전체", "올인"]:
-                value = round(int(user[1]) / int(stat[1]))
-            elif value.isdecimal() is not True:
-                raise commands.BadArgument
-            # todo 사는 것과 관련한 기능
-
 
 def setup(miya):
     miya.add_cog(Economy(miya))

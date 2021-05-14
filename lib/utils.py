@@ -15,10 +15,9 @@ from lib import config
 
 
 class Forbidden(commands.CheckFailure):
-    def __init__(self, embed):
-        self.embed = embed
+    def __init__(self, ctx):
         super().__init__(
-            "<a:ban_guy:761149578216603668> https://discord.gg/tu4NKbEEnn")
+            "<a:ban_guy:761149578216603668> 현재 미야 이용이 제한되셨어요, 자세한 내용은 `미야야 문의`를 사용해 문의해주세요.")
 
 
 class NoReg(commands.CheckFailure):
@@ -114,24 +113,40 @@ class Blacklisting:
     def __init__(self):
         self.get = Get()
 
-    async def user(self, ctx, task, id, *, reason: typing.Optional[str]):
+    async def user(self, ctx, task, user: discord.User, *, reason):
         time = self.get.localize(datetime.datetime.utcnow())
         if task == 0:
             await sql(
                 1,
-                f"INSERT INTO `blacklist`(`id`, `reason`, `admin`, `datetime`) VALUES('{id}', '{reason}', '{ctx.author.id}', '{self.time}')",
+                f"UPDATE `users` SET `permission` = 'Blocked'",
             )
             await Hook.terminal(
                 1,
-                f"Added Block >\nBlocked - {id}\nAdmin - {ctx.author} ({ctx.author.id})\nReason - {reason}",
+                f"Added Block >\nBlocked - {user.id}\nAdmin - {ctx.author} ({ctx.author.id})\nReason - {reason}",
                 "제한 기록",
                 ctx.bot.user.avatar_url,
             )
+            try:
+                embed = discord.Embed(
+                    title=f"이런, {user}님은 차단되셨어요.",
+                    description=f"""
+현재 미야 이용이 제한되셨어요, 자세한 내용은 `미야야 문의`를 사용해 문의해주세요.
+사유 : {reason}
+관리자 : {ctx.author}
+차단 시각 : {time}
+                    """,
+                    timestamp=datetime.datetime.utcnow(),
+                    color=0xFF3333,
+                )
+                embed.set_author(name="이용 제한", icon_url=ctx.bot.user.avatar_url)
+                await user.send(f"{user.mention} https://discord.gg/tu4NKbEEnn", embed=embed)
+            except:
+                pass
         elif task == 1:
-            await sql(1, f"DELETE FROM `blacklist` WHERE `id` = '{id}'")
+            await sql(1, f"UPDATE `users` SET `permission` = 'User' WHERE `id` = '{user.id}'")
             await Hook.terminal(
                 1,
-                f"Removed Block >\nUnblocked - {id}\nAdmin - {ctx.author} ({ctx.author.id})",
+                f"Removed Block >\nUnblocked - {user.id}\nAdmin - {ctx.author} ({ctx.author.id})",
                 "제한 기록",
                 ctx.bot.user.avatar_url,
             )
@@ -162,7 +177,6 @@ class Blacklisting:
 class Check:
     def __init__(self):
         self.hook = Hook()
-        self.get = Get()
         self.black = Blacklisting()
 
     async def explicit(self, ctx):
@@ -176,15 +190,8 @@ class Check:
         user = await sql(
             0, f"SELECT * FROM `users` WHERE `user` = '{ctx.author.id}'")
         if user[0][1] == "Blocked":
-            rows = await sql(
-                0, f"SELECT * FROM `blacklist` WHERE `id` = '{ctx.author.id}'")
-            return {
-                "Blocked": True,
-                "Reason": rows[0][1],
-                "Admin": ctx.bot.get_user(int(rows[0][2])),
-                "Time": rows[0][3],
-            }
-        return {"Blocked": False}
+            return True
+        return False
 
     async def mgr(self, ctx):
         if commands.is_owner():
@@ -239,22 +246,18 @@ class Check:
             )
             raise Maintaining(maintain[0][2])
 
-        reason = None
-        admin = None
-        time = None
-        if block["Blocked"]:
-            reason = block["Reason"]
+        if block:
             await self.hook.terminal(
                 0,
                 f"Blocked User >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
                 "명령어 처리 기록",
                 ctx.bot.user.avatar_url,
             )
+            raise Forbidden()
         elif explicit["Explicit"]:
             word = explicit["Word"]
             reason = f"부적절한 언행 **[Auto]** - {word}"
             admin = ctx.bot.user
-            time = self.get.localize(datetime.datetime.utcnow())
             await self.black.user(0, ctx.author.id, admin, reason)
             await self.hook.terminal(
                 1,
@@ -268,6 +271,7 @@ class Check:
                 "명령어 처리 기록",
                 ctx.bot.user.avatar_url,
             )
+            raise Forbidden()
         elif not user and ctx.command.name != "가입":
             await self.hook.terminal(
                 0,
@@ -284,17 +288,3 @@ class Check:
                 ctx.bot.user.avatar_url,
             )
             return True
-
-        embed = discord.Embed(
-            title=f"이런, {ctx.author}님은 차단되셨어요.",
-            description=f"""
-차단에 관해서는 지원 서버를 방문해주세요.
-사유 : {reason}
-관리자 : {admin}
-차단 시각 : {time}
-            """,
-            timestamp=datetime.datetime.utcnow(),
-            color=0xFF3333,
-        )
-        embed.set_author(name="이용 제한", icon_url=ctx.bot.user.avatar_url)
-        raise Forbidden(embed)

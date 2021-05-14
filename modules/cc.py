@@ -31,13 +31,19 @@ def has_no_symbols():
 
 
 class CC(commands.Cog, name="기억"):
-    """[ 개발 중 ]미야를 똑똑하게 만들기 프로젝트"""
+    """[ 개발 중 ] 미야를 똑똑하게 만들기 프로젝트"""
     def __init__(self, miya):
         self.miya = miya
 
     @commands.command(name="기억해", aliases=["배워"])
     @has_no_symbols()
     async def _learn(self, ctx, word, *, value):
+        """
+        미야야 배워 < 단어 > < 내용 >
+
+
+        미야에게 새로운 무언가를 가르칩니다.
+        """
         word.lower()
         try:
             response = await self.miya.koreanbots.getVote(ctx.author.id)

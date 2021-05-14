@@ -173,11 +173,11 @@ class Settings(commands.Cog, name="설정"):
             else:
                 raise commands.BadArgument
 
-    @commands.command(name="링크차단")
+    @commands.command(name="링크차단", aliases=["필터링"])
     @commands.has_permissions(manage_guild=True)
     async def link_set(self, ctx, what):
         """
-        미야야 링크차단 < 켜기 / 끄기 >
+        미야야 필터링 < 켜기 / 끄기 >
 
 
         서버 내에서 Discord 초대 링크를 승인할 지 삭제할 지 설정합니다.

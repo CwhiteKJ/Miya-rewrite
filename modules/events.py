@@ -252,7 +252,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
         if not grows:
             g_result = await sql(
                 1,
-                f"INSERT INTO `guilds`(`guild`, `eventLog`, `muteRole`, `linkFiltering`, `warn_kick`) VALUES('{guild.id}', '1234', '1234', 'false', '0')",
+                f"INSERT INTO `guilds`(`guild`, `eventLog`, `muteRole`, `linkFiltering`, `maxWarn`) VALUES('{guild.id}', '1234', '1234', 'false', '0')",
             )
             default_join_msg = "{member}님 **{guild}**에 오신 것을 환영해요! 현재 인원 : {count}명"
             default_quit_msg = "{member}님 안녕히 가세요.. 현재 인원 : {count}명"
@@ -291,47 +291,12 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                         "서버 입퇴장 기록",
                         self.miya.user.avatar_url,
                     )
-            else:
-                await Hook.terminal(
-                    0,
-                    f"Register Failed >\nGuild - {guild.name} ({guild.id})\nguilds Table - {g_result}\nmemberNoti Table - {m_result}",
-                    "서버 등록 기록",
-                    self.miya.user.avatar_url,
-                )
-                await guild.text_channels[0].send(
-                    f"<:cs_stop:665173353874587678> {guild.owner.mention} 미야 설정이 정상적으로 완료되지 않았습니다.\n자세한 내용은 https://discord.gg/tu4NKbEEnn 으로 문의해주세요."
-                )
-        rows = await sql(
-            0, f"SELECT * FROM `blacklist` WHERE `id` = '{guild.id}'")
-        rows2 = await sql(
-            0, f"SELECT * FROM `blacklist` WHERE `id` = '{guild.owner.id}'")
-        if rows or rows2:
+        users = await sql(
+            0, f"SELECT * FROM `users` WHERE `user` = '{guild.owner.id}'")
+        if users[0][1] == "Blocked":
             try:
-                temp = None
-                if rows:
-                    temp = rows
-                elif rows2:
-                    temp = rows2
-                else:
-                    await guild.leave()
-                    return
-                admin = self.miya.get_user(int(temp[0][2]))
-                embed = discord.Embed(
-                    title=f"이런, {guild.name} 서버는 (혹은 그 소유자가) 차단되었어요.",
-                    description=f"""
-차단에 관해서는 지원 서버를 방문해주세요.
-사유 : {temp[0][1]}
-관리자 : {admin}
-차단 시각 : {temp[0][3]}
-                    """,
-                    timestamp=datetime.datetime.utcnow(),
-                    color=0xFF3333,
-                )
-                embed.set_author(name="초대 제한",
-                                 icon_url=self.miya.user.avatar_url)
                 await guild.owner.send(
-                    f"<:cs_notify:659355468904529920> {guild.owner.mention} https://discord.gg/tu4NKbEEnn",
-                    embed=embed,
+                    f"<a:ban_guy:761149578216603668> 현재 {guild.name} 서버는 미야 이용이 제한되었어요, 자세한 내용은 `미야야 문의`를 사용해 문의해주세요.",
                 )
             except:
                 await Hook.terminal(
@@ -339,24 +304,6 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                     f"Owner DM Failed >\nGuild - {guild.name} ({guild.id})",
                     "서버 입퇴장 기록",
                     self.miya.user.avatar_url,
-                )
-                admin = self.miya.get_user(int(temp[0][2]))
-                embed = discord.Embed(
-                    title=f"이런, {guild.name} 서버는 (혹은 그 소유자가) 차단되었어요.",
-                    description=f"""
-차단에 관해서는 지원 서버를 방문해주세요.
-사유 : {temp[0][1]}
-관리자 : {admin}
-차단 시각 : {temp[0][3]}
-                    """,
-                    timestamp=datetime.datetime.utcnow(),
-                    color=0xFF3333,
-                )
-                embed.set_author(name="초대 제한",
-                                 icon_url=self.miya.user.avatar_url)
-                await guild.text_channels[0].send(
-                    f"<:cs_notify:659355468904529920> {guild.owner.mention} https://discord.gg/tu4NKbEEnn",
-                    embed=embed,
                 )
             await Hook.terminal(
                 0,

@@ -14,6 +14,7 @@ locale.setlocale(locale.LC_ALL, "")
 Hook = utils.Hook()
 Check = utils.Check()
 Get = utils.Get()
+Black = utils.Blacklisting()
 
 
 class Administration(commands.Cog, name="미야 유지보수"):
@@ -261,39 +262,9 @@ class Administration(commands.Cog, name="미야 유지보수"):
         미야야 블랙 < 추가 / 삭제 > < ID > [ 사유 ]
 
 
-        ID를 통해 유저나 서버의 블랙리스트를 관리합니다.
+        유저의 미야 이용을 제한합니다.
         """
-        time = Get.localize(datetime.datetime.utcnow())
-        if todo == "추가":
-            result = await sql(
-                1,
-                f"INSERT INTO `blacklist`(`id`, `reason`, `admin`, `datetime`) VALUES('{id}', '{reason}', '{ctx.author.id}', '{time}')",
-            )
-            if result == "SUCCESS":
-                await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
-                await Hook.terminal(
-                    1,
-                    f"New Block >\nVictim - {id}\nAdmin - {ctx.author} ({ctx.author.id})\nReason - {reason}",
-                    "제한 기록",
-                    self.miya.user.avatar_url,
-                )
-            else:
-                await ctx.message.add_reaction("<:cs_no:659355468816187405>")
-        elif todo == "삭제":
-            result = await sql(1,
-                               f"DELETE FROM `blacklist` WHERE `id` = '{id}'")
-            if result == "SUCCESS":
-                await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
-                await Hook.terminal(
-                    1,
-                    f"Removed Block >\nUnblocked - {id}\nAdmin - {ctx.author} ({ctx.author.id})",
-                    "제한 기록",
-                    self.miya.user.avatar_url,
-                )
-            else:
-                await ctx.message.add_reaction("<:cs_no:659355468816187405>")
-        else:
-            raise commands.BadArgument
+        
 
     @commands.command(name="탈주", hidden=True)
     @is_owner()
