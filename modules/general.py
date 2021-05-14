@@ -22,12 +22,6 @@ class General(commands.Cog, name="일반"):
         self.miya = miya
         self.check = utils.Check()
 
-    @commands.command(name="문의", aliases=["지원"])
-    async def _support(self, ctx):
-        await ctx.reply(
-            "<:cs_id:659355469034422282> 미야에 관해 문의할 것이 있으시다면, 아래 지원 서버로 접속해주세요.\nhttps://discord.gg/tu4NKbEEnn"
-        )
-
     @commands.command(name="도움말", aliases=["도움", "명령어"])
     @commands.bot_has_permissions(embed_links=True)
     async def _help(self, ctx, *, input: typing.Optional[str]):
@@ -231,6 +225,18 @@ class General(commands.Cog, name="일반"):
                                     icon_url=self.miya.user.avatar_url)
                     duck.set_footer(text=p["message"])
                     await ctx.reply(embed=duck)
+
+    @commands.command(name="문의", aliases=["지원"])
+    async def _support(self, ctx):
+        """
+        미야야 문의
+
+
+        미야 지원 서버로 가는 링크를 표시합니다.
+        """
+        await ctx.reply(
+            "<:cs_id:659355469034422282> 미야에 관해 문의할 것이 있으시다면, 아래 지원 서버로 접속해주세요.\nhttps://discord.gg/tu4NKbEEnn"
+        )
 
 
 def setup(miya):
