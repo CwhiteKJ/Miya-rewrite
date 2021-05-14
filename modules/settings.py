@@ -39,6 +39,7 @@ class Settings(commands.Cog, name="설정"):
             embed.set_author(name="서비스 등록", icon_url=self.miya.user.avatar_url)
             register_msg = await ctx.reply(embed=embed)
             async with ctx.channel.typing():
+
                 def check(msg):
                     return (msg.channel == ctx.channel
                             and msg.author == ctx.author

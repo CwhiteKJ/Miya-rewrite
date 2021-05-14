@@ -1,8 +1,8 @@
 import datetime
 import locale
-import typing
 import os
 import sys
+import typing
 
 import discord
 from discord.ext import commands
@@ -37,7 +37,7 @@ class Administration(commands.Cog, name="미야 유지보수"):
 
         현재 프로세스를 완전히 닫고 재시작합니다.
         """
-        os.execl(sys.executable, sys.executable, *sys.argv)
+        os.execl(sys.executable, sys.executable, *sys.argv)
 
     @commands.command(name="종료", hidden=True)
     @is_owner()
