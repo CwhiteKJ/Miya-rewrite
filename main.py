@@ -32,7 +32,7 @@ class Miya(commands.AutoShardedBot):
                 result = 9 * (num - 1) + (index + 1)
                 return result
 
-    async def record(content):
+    async def record(self, content):
         try:
             payload = content.encode("utf-8")
             async with aiohttp.ClientSession(raise_for_status=True) as cs:
