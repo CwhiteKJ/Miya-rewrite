@@ -266,7 +266,7 @@ class Check:
                 "명령어 처리 기록",
                 ctx.bot.user.avatar_url,
             )
-            raise Forbidden()
+            raise Forbidden
         elif explicit["Explicit"]:
             word = explicit["Word"]
             reason = f"부적절한 언행 **[Auto]** - {word}"
@@ -284,15 +284,27 @@ class Check:
                 "명령어 처리 기록",
                 ctx.bot.user.avatar_url,
             )
-            raise Forbidden()
+            raise Forbidden
         elif not user and ctx.command.name != "가입":
+            await sql(
+                1,
+                f"INSERT INTO `users`(`user`, `permission`, `money`) VALUES('{ctx.author.id}', 'Unregistered', '500')",
+            )
             await self.hook.terminal(
                 0,
                 f"Cancelled >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
                 "명령어 처리 기록",
                 ctx.bot.user.avatar_url,
             )
-            raise NoReg()
+            raise NoReg
+        elif user[0][1] == "Unregistered":
+            await self.hook.terminal(
+                0,
+                f"Cancelled >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
+                "명령어 처리 기록",
+                ctx.bot.user.avatar_url,
+            )
+            raise NoReg
         else:
             await self.hook.terminal(
                 0,
