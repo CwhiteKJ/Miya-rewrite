@@ -37,7 +37,24 @@ class Administration(commands.Cog, name="미야 유지보수"):
 
         현재 프로세스를 완전히 닫고 재시작합니다.
         """
-        os.execl(sys.executable, sys.executable, *sys.argv)
+        msg = await ctx.reply(
+            f":grey_question: 미야를 정말로 재시작하시겠어요? 진행 중이던 작업이 사라질 수 있어요!\n<:cs_yes:659355468715786262> - 네\n<:cs_no:659355468816187405> - 아니오"
+        )
+        await msg.add_reaction("<:cs_yes:659355468715786262>")
+        await msg.add_reaction("<:cs_no:659355468816187405>")
+
+        def check(reaction, user):
+            return reaction.message.id == msg.id and user == ctx.author
+
+        try:
+            reaction, user = await self.miya.wait_for("reaction_add",
+                                                      timeout=30,
+                                                      check=check)
+        except:
+            await msg.delete()
+        else:
+            if str(reaction.emoji) == "<:cs_yes:659355468715786262>":
+                os.execl(sys.executable, sys.executable, *sys.argv)
 
     @commands.command(name="종료", hidden=True)
     @is_owner()
@@ -48,7 +65,24 @@ class Administration(commands.Cog, name="미야 유지보수"):
 
         미야를 로그아웃시키고 프로세스를 닫습니다.
         """
-        await self.miya.logout()
+        msg = await ctx.reply(
+            f":grey_question: 미야를 정말로 종료하시겠어요? 진행 중이던 작업이 사라질 수 있어요!\n<:cs_yes:659355468715786262> - 예\n<:cs_no:659355468816187405> - 아니오"
+        )
+        await msg.add_reaction("<:cs_yes:659355468715786262>")
+        await msg.add_reaction("<:cs_no:659355468816187405>")
+
+        def check(reaction, user):
+            return reaction.message.id == msg.id and user == ctx.author
+
+        try:
+            reaction, user = await self.miya.wait_for("reaction_add",
+                                                      timeout=30,
+                                                      check=check)
+        except:
+            await msg.delete()
+        else:
+            if str(reaction.emoji) == "<:cs_yes:659355468715786262>":
+                await self.miya.logout()
 
     @commands.command(name="권한", hidden=True)
     @is_owner()
@@ -198,7 +232,7 @@ class Administration(commands.Cog, name="미야 유지보수"):
                                                       timeout=30,
                                                       check=check)
         except:
-            await msg.clear_reaction()
+            await msg.delete()
         else:
             if str(reaction.emoji) == "<:cs_yes:659355468715786262>":
                 operation = "true"
