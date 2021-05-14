@@ -151,7 +151,7 @@ class Economy(commands.Cog, name="경제"):
             raise commands.BadArgument
 
         if int(rows[0][2]) == 0 or int(rows[0][2]) < int(money):
-            await ctx.reply(f"🍋 코인이 부족해요! 현재 코인 : {rows[0][1]}개")
+            await ctx.reply(f"🍋 코인이 부족해요! 현재 코인 : {rows[0][2]}개")
         else:
             msg = await ctx.reply(
                 "🎲 홀짝 도박을 시작할게요! 당신의 선택은 무엇인가요?\n1️⃣ - 홀\n2️⃣ - 짝")
