@@ -259,7 +259,7 @@ class Check:
             )
             raise Maintaining(maintain[0][2])
 
-        if block:
+        if block is True:
             await self.hook.terminal(
                 0,
                 f"Blocked User >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
@@ -267,7 +267,7 @@ class Check:
                 ctx.bot.user.avatar_url,
             )
             raise Forbidden
-        elif explicit["Explicit"]:
+        elif explicit["Explicit"] is True:
             word = explicit["Word"]
             reason = f"부적절한 언행 **[Auto]** - {word}"
             admin = ctx.bot.user
