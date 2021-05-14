@@ -37,9 +37,9 @@ class Miya(commands.AutoShardedBot):
             payload = content.encode('utf-8')
             async with aiohttp.ClientSession(raise_for_status=True) as cs:
                 async with cs.post('https://hastebin.com/documents', data=payload) as r:
-                post = await r.json()
-                uri = post['key']
-                return f'https://hastebin.com/{uri}'
+                    post = await r.json()
+                    uri = post['key']
+                    return f'https://hastebin.com/{uri}'
         except aiohttp.ClientResponseError:
             return discord.File(io.StringIO(content), filename='Traceback.txt')
 
