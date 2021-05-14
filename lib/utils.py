@@ -15,7 +15,7 @@ from lib import config
 
 
 class Forbidden(commands.CheckFailure):
-    def __init__(self, ctx):
+    def __init__(self):
         super().__init__(
             "<a:ban_guy:761149578216603668> 현재 미야 이용이 제한되셨어요, 자세한 내용은 `미야야 문의`를 사용해 문의해주세요.")
 
@@ -213,6 +213,9 @@ class Check:
         return mrows[0][1] == "Administrator"
 
     async def identify(self, ctx):
+        if ctx.message.content.replace("미야야 ", "") == "문의":
+            return True
+
         if ctx.channel.type == discord.ChannelType.private:
             await self.hook.terminal(
                 0,
