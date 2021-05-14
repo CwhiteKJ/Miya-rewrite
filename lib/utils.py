@@ -297,7 +297,7 @@ class Check:
                 ctx.bot.user.avatar_url,
             )
             raise NoReg
-        elif user[0][1] == "Stranger":
+        elif user[0][1] == "Stranger" and ctx.command.name != "가입":
             await self.hook.terminal(
                 0,
                 f"Cancelled >\nUser - {ctx.author} ({ctx.author.id})\nContent - {ctx.message.content}\nGuild - {ctx.guild.name} ({ctx.guild.id})",
