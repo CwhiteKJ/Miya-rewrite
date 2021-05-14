@@ -11,16 +11,16 @@ from lib.utils import sql
 
 locale.setlocale(locale.LC_ALL, "")
 
-Hook = utils.Hook()
 Check = utils.Check()
-Get = utils.Get()
-Black = utils.Blacklisting()
 
 
 class Administration(commands.Cog, name="미야 유지보수"):
     """미야의 유지 관리 및 보수에 사용되는 것들"""
     def __init__(self, miya):
         self.miya = miya
+        self.black = utils.Blacklisting()
+        self.hook = utils.Hook()
+        self.get = utils.Get()
 
     def is_manager():
         return commands.check(Check.mgr)
@@ -225,27 +225,9 @@ class Administration(commands.Cog, name="미야 유지보수"):
         자동 차단 단어를 관리합니다.
         """
         if todo == "추가":
-            result = await sql(
-                1, f"INSERT INTO `forbidden`(`word`) VALUES('{word}')")
-            if result == "SUCCESS":
-                await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
-                await Hook.terminal(
-                    1,
-                    f"New Forbidden >\nAdmin - {ctx.author} ({ctx.author.id})\nPhrase - {word}",
-                    "제한 기록",
-                    self.miya.user.avatar_url,
-                )
+            await self.black.word(ctx, 0, word)
         elif todo == "삭제":
-            result = await sql(
-                1, f"DELETE FROM `forbidden` WHERE `word` = '{word}'")
-            if result == "SUCCESS":
-                await ctx.message.add_reaction("<:cs_yes:659355468715786262>")
-                await Hook.terminal(
-                    1,
-                    f"Removed Forbidden >\nAdmin - {ctx.author} ({ctx.author.id})\nPhrase - {word}",
-                    "제한 기록",
-                    self.miya.user.avatar_url,
-                )
+            await self.black.word(ctx, 1, word)
         else:
             raise commands.BadArgument
 
@@ -255,7 +237,7 @@ class Administration(commands.Cog, name="미야 유지보수"):
             self,
             ctx,
             todo,
-            id,
+            user: discord.User,
             *,
             reason: typing.Optional[str] = "사유가 지정되지 않았습니다."):
         """
@@ -264,7 +246,12 @@ class Administration(commands.Cog, name="미야 유지보수"):
 
         유저의 미야 이용을 제한합니다.
         """
-        
+        if todo == "추가":
+            await self.black.user(ctx, 0, user, reason)
+        elif todo == "삭제":
+            await self.black.user(ctx, 1, user, reason)
+        else:
+            raise commands.BadArgument
 
     @commands.command(name="탈주", hidden=True)
     @is_owner()

@@ -113,7 +113,7 @@ class Blacklisting:
     def __init__(self):
         self.get = Get()
 
-    async def user(self, ctx, task, user: discord.User, *, reason):
+    async def user(self, ctx, task, user: discord.User, reason: str):
         time = self.get.localize(datetime.datetime.utcnow())
         if task == 0:
             await sql(
