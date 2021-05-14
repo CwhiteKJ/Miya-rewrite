@@ -23,9 +23,13 @@ class General(commands.Cog, name="일반"):
         self.miya = miya
         self.check = utils.Check()
 
+    @commands.command(name="문의", aliases=["지원"])
+    async def _support(self, ctx):
+        await ctx.reply("<:cs_id:659355469034422282> 미야에 관해 문의할 것이 있으시다면, 아래 지원 서버로 접속해주세요.\nhttps://discord.gg/tu4NKbEEnn")
+
     @commands.command(name="도움말", aliases=["도움", "명령어"])
     @commands.bot_has_permissions(embed_links=True)
-    async def help(self, ctx, *, input: typing.Optional[str]):
+    async def _help(self, ctx, *, input: typing.Optional[str]):
         """
         미야야 도움말 [ 확장 이름 ]
 
