@@ -211,7 +211,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                 self.miya.user.avatar_url,
             )
             await ctx.reply(
-                f":warning: 명령어 실행 도중 오류가 발생했어요.\n오류 해결을 위해 Discord 지원 서버로 문의해주세요. https://discord.gg/tu4NKbEEnn"
+                f":warning: 명령어 실행 도중 오류가 발생했어요.\n이 오류가 지속된다면 `미야야 문의`를 사용해 문의해주세요."
             )
 
     @commands.Cog.listener()
