@@ -1,6 +1,8 @@
 import datetime
 import locale
 import typing
+import os
+import sys
 
 import discord
 from discord.ext import commands
@@ -25,6 +27,28 @@ class Administration(commands.Cog, name="미야 유지보수"):
 
     def is_owner():
         return commands.check(Check.owner)
+
+    @commands.command(name="재시작", hidden=True)
+    @is_owner()
+    async def _restart(self, ctx):
+        """
+        미야야 재시작
+
+
+        현재 프로세스를 완전히 닫고 재시작합니다.
+        """
+        os.execl(sys.executable, sys.executable, *sys.argv)
+
+    @commands.command(name="종료", hidden=True)
+    @is_owner()
+    async def _shutdown(self, ctx):
+        """
+        미야야 종료
+
+
+        미야를 로그아웃시키고 프로세스를 닫습니다.
+        """
+        await self.miya.logout()
 
     @commands.command(name="권한", hidden=True)
     @is_owner()
