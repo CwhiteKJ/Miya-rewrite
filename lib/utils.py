@@ -17,7 +17,8 @@ from lib import config
 class Forbidden(commands.CheckFailure):
     def __init__(self):
         super().__init__(
-            "<a:ban_guy:761149578216603668> 현재 미야 이용이 제한되셨어요, 자세한 내용은 `미야야 문의`를 사용해 문의해주세요.")
+            "<a:ban_guy:761149578216603668> 현재 미야 이용이 제한되셨어요, 자세한 내용은 `미야야 문의`를 사용해 문의해주세요."
+        )
 
 
 class NoReg(commands.CheckFailure):
@@ -139,12 +140,18 @@ class Blacklisting:
                     timestamp=datetime.datetime.utcnow(),
                     color=0xFF3333,
                 )
-                embed.set_author(name="이용 제한", icon_url=ctx.bot.user.avatar_url)
-                await user.send(f"{user.mention} https://discord.gg/tu4NKbEEnn", embed=embed)
+                embed.set_author(name="이용 제한",
+                                 icon_url=ctx.bot.user.avatar_url)
+                await user.send(
+                    f"{user.mention} https://discord.gg/tu4NKbEEnn",
+                    embed=embed)
             except:
                 pass
         elif task == 1:
-            await sql(1, f"UPDATE `users` SET `permission` = 'User' WHERE `id` = '{user.id}'")
+            await sql(
+                1,
+                f"UPDATE `users` SET `permission` = 'User' WHERE `id` = '{user.id}'"
+            )
             await self.hook.terminal(
                 1,
                 f"Removed Block >\nUnblocked - {user.id}\nAdmin - {ctx.author} ({ctx.author.id})",

@@ -1,11 +1,14 @@
-import discord
-from discord.ext import commands
 import datetime
 import typing
-from discord import Webhook, AsyncWebhookAdapter
+
 import aiohttp
-from lib.utils import sql
+import discord
+from discord import AsyncWebhookAdapter
+from discord import Webhook
+from discord.ext import commands
+
 from lib import utils
+from lib.utils import sql
 
 
 class Information(commands.Cog, name="정보"):
@@ -152,7 +155,7 @@ class Information(commands.Cog, name="정보"):
                          icon_url=self.miya.user.avatar_url)
         embed.set_image(url=user.avatar_url_as(static_format="png", size=2048))
         await ctx.reply(embed=embed)
-    
+
     @commands.command(name="한강")
     async def _hangang(self, ctx):
         """
@@ -205,6 +208,7 @@ class Information(commands.Cog, name="정보"):
                 "https://cdn.discordapp.com/attachments/746786600037384203/761404488023408640/unknown.png"
             )
             await ctx.reply(embed=embed)
+
 
 def setup(miya):
     miya.add_cog(Information(miya))
