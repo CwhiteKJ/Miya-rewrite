@@ -9,7 +9,7 @@ from lib.utils import sql
 
 
 class Economy(commands.Cog, name="경제"):
-    """미야와 함께 갑부가 되기 3분 강좌"""
+    """미야와 함께 갑부가 되는 법 3분 강좌"""
     def __init__(self, miya):
         self.miya = miya
 
@@ -116,7 +116,7 @@ class Economy(commands.Cog, name="경제"):
                     color=0x99FF99,
                 )
                 embed.set_footer(text="봇을 상대로 모든 것을 가져간 나")
-                plus = int(money) * (bot - user)
+                plus = int(money) * (user - bot)
                 rest = int(rows[0][2]) + plus
             embed.set_author(name="카케구루이", icon_url=self.miya.user.avatar_url)
             embed.set_thumbnail(
