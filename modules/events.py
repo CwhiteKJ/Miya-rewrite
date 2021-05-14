@@ -1,6 +1,7 @@
 import datetime
 import locale
 import random
+import traceback
 
 import aiohttp
 import discord
