@@ -61,7 +61,7 @@ def load_modules(miya):
         "modules.settings",
         "modules.admin",
         "modules.mods",
-        "modules.cc"
+        "modules.cc",
         "modules.eco",
         "modules.events",
         "modules.log",
