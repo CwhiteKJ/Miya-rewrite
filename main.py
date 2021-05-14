@@ -1,15 +1,15 @@
+import io
 import locale
+import sys
+import traceback
 
+import aiohttp
 import discord
 import koreanbots
 from discord.ext import commands
 
 from lib import config
 from lib import utils
-import aiohttp
-import io
-import traceback
-import sys
 
 Check = utils.Check()
 
@@ -34,14 +34,15 @@ class Miya(commands.AutoShardedBot):
 
     async def record(content):
         try:
-            payload = content.encode('utf-8')
+            payload = content.encode("utf-8")
             async with aiohttp.ClientSession(raise_for_status=True) as cs:
-                async with cs.post('https://hastebin.com/documents', data=payload) as r:
+                async with cs.post("https://hastebin.com/documents",
+                                   data=payload) as r:
                     post = await r.json()
-                    uri = post['key']
-                    return f'https://hastebin.com/{uri}'
+                    uri = post["key"]
+                    return f"https://hastebin.com/{uri}"
         except aiohttp.ClientResponseError:
-            return discord.File(io.StringIO(content), filename='Traceback.txt')
+            return discord.File(io.StringIO(content), filename="Traceback.txt")
 
 
 intents = discord.Intents(
@@ -98,16 +99,18 @@ async def process(ctx):
     p = await Check.identify(ctx)
     return p
 
+
 @miya.event
 async def on_error(event, *args, **kwargs):
     s = traceback.format_exc()
-    content = f'{event}에 발생한 예외를 무시합니다;\n{s}'
+    content = f"{event}에 발생한 예외를 무시합니다;\n{s}"
     record = await miya.record(content)
     channel = miya.get_channel(config.Debug)
     if isinstance(record, discord.File):
         await channel.send(file=record)
     else:
         await channel.send(record)
+
 
 load_modules(miya)
 miya.run(config.BotToken)

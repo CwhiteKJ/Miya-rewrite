@@ -209,9 +209,11 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                     f"<:cs_console:659355468786958356> `{usage}`(이)가 올바른 명령어에요!"
                 )
         else:
-            exc = getattr(error, 'original', error)
-            lines = ''.join(traceback.format_exception(exc.__class__, exc, exc.__traceback__))
-            lines = f'{ctx.command}에 발생한 예외를 무시합니다;\n{lines}'
+            exc = getattr(error, "original", error)
+            lines = "".join(
+                traceback.format_exception(exc.__class__, exc,
+                                           exc.__traceback__))
+            lines = f"{ctx.command}에 발생한 예외를 무시합니다;\n{lines}"
             record = await self.miya.record(lines)
             channel = self.miya.get_channel(config.Debug)
             if isinstance(record, discord.File):

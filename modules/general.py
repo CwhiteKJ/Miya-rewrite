@@ -69,7 +69,8 @@ class General(commands.Cog, name="일반"):
                         timestamp=datetime.datetime.utcnow(),
                     )
                     for command in self.miya.get_cog(cog).get_commands():
-                        if not command.hidden or (await self.check.owner(ctx)) is True:
+                        if not command.hidden or (
+                                await self.check.owner(ctx)) is True:
                             embed.add_field(
                                 name=command.help.split("\n")[0],
                                 value=command.help.split("\n")[3],
