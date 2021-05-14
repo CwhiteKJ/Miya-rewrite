@@ -19,8 +19,6 @@ class Administration(commands.Cog, name="미야 유지보수"):
     def __init__(self, miya):
         self.miya = miya
         self.black = utils.Blacklisting()
-        self.hook = utils.Hook()
-        self.get = utils.Get()
 
     def is_manager():
         return commands.check(Check.mgr)
