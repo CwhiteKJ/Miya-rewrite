@@ -80,8 +80,12 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
             try:
                 p = await self.check.identify(ctx)
             except Exception as e:
-                if (isinstance(e, Forbidden) or isinstance(e, NoReg)
-                        or isinstance(e, Maintaining)):
+                if isinstance(e, Forbidden):
+                    try:
+                        await ctx.author.send(str(e))
+                    except:
+                        await ctx.reply(str(e))
+                elif isinstance(e, NoReg) or isinstance(e, Maintaining):
                     await ctx.reply(str(e))
                 elif isinstance(e, commands.NoPrivateMessage):
                     return
