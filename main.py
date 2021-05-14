@@ -101,7 +101,6 @@ async def process(ctx):
 async def on_error(event, *args, **kwargs):
     s = traceback.format_exc()
     content = f'{event}에 발생한 예외를 무시합니다;\n{s}'
-    print(content, file=sys.stderr)
     record = await miya.record(content)
     channel = miya.get_channel(config.Debug)
     if isinstance(record, discord.File):
