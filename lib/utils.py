@@ -143,7 +143,7 @@ class Blacklisting:
                 embed.set_author(name="이용 제한",
                                  icon_url=ctx.bot.user.avatar_url)
                 await user.send(
-                    f"{user.mention} https://discord.gg/tu4NKbEEnn",
+                    f"<a:ban_guy:761149578216603668> {user.mention}",
                     embed=embed)
             except:
                 pass
