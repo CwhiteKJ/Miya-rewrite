@@ -254,7 +254,7 @@ class Administration(commands.Cog, name="미야 유지보수"):
 
     @commands.command(name="SQL", hidden=True)
     @is_owner()
-    async def _sql(self, ctx, work, *, sql):
+    async def _sql(self, ctx, work, *, cmd):
         """
         미야야 SQL < fetch / commit > < SQL 명령 >
 
@@ -263,7 +263,7 @@ class Administration(commands.Cog, name="미야 유지보수"):
         """
         if work == "fetch":
             a = ""
-            rows = await sql(0, sql)
+            rows = await sql(0, cmd)
             for row in rows:
                 a += f"{row}\n"
             if len(a) > 1900:
@@ -272,7 +272,7 @@ class Administration(commands.Cog, name="미야 유지보수"):
             else:
                 await ctx.reply(a)
         elif work == "commit":
-            result = await sql(1, sql)
+            result = await sql(1, cmd)
             await ctx.reply(result)
         else:
             raise commands.BadArgument
