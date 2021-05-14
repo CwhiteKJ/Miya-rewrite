@@ -74,7 +74,7 @@ class Hook:
                                username=name,
                                avatar_url=avatar)
 
-    async def hook(self, url, content, name, avatar):
+    async def send(self, url, content, name, avatar):
         async with aiohttp.ClientSession() as session:
             webhook = Webhook.from_url(url,
                                        adapter=AsyncWebhookAdapter(session))
@@ -130,9 +130,9 @@ class Blacklisting:
             )
             try:
                 embed = discord.Embed(
-                    title=f"이런, {user}님은 차단되셨어요.",
+                    title=f"이런, {user}님은 이용이 제한되셨어요.",
                     description=f"""
-현재 미야 이용이 제한되셨어요, 자세한 내용은 `미야야 문의`를 사용해 문의해주세요.
+자세한 내용은 `미야야 문의`를 사용해 문의해주세요.
 사유 : {reason}
 관리자 : {ctx.author}
 차단 시각 : {time}
