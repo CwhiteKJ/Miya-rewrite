@@ -56,15 +56,15 @@ miya = Miya(
 def load_modules(miya):
     failed = []
     exts = [
+        "modules.info",
         "modules.general",
-        "modules.events",
         "modules.settings",
         "modules.admin",
         "modules.mods",
-        "modules.log",
+        "modules.cc"
         "modules.eco",
-        "modules.cc",
-        "modules.info",
+        "modules.events",
+        "modules.log",
         "jishaku",
     ]
 
