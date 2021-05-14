@@ -181,6 +181,8 @@ class Information(commands.Cog, name="정보"):
     async def _corona_info(self, ctx):
         """
         미야야 코로나
+
+
         대한민국의 코로나 현황을 불러옵니다.
         """
         async with ctx.channel.typing():
