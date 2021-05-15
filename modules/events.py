@@ -214,12 +214,15 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                 traceback.format_exception(exc.__class__, exc,
                                            exc.__traceback__))
             lines = f"{ctx.command}에 발생한 예외를 무시합니다;\n{lines}"
-            record = await self.miya.record(lines)
             channel = self.miya.get_channel(config.Debug)
-            if isinstance(record, discord.File):
-                await channel.send(file=record)
-            else:
-                await channel.send(record)
+            try:
+                await channel.send(content)
+            except:
+                record = await miya.record(content)
+                if isinstance(record, discord.File):
+                    await channel.send(file=record)
+                else:
+                    await channel.send(record)
             await self.hook.terminal(
                 0,
                 f"Error >\nContent - {ctx.message.content}\nException - {error}\n자세한 내용은 디버그 채널을 참조하세요.",
