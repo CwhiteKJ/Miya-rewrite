@@ -104,12 +104,15 @@ async def process(ctx):
 async def on_error(event, *args, **kwargs):
     s = traceback.format_exc()
     content = f"{event}에 발생한 예외를 무시합니다;\n{s}"
-    record = await miya.record(content)
     channel = miya.get_channel(config.Debug)
-    if isinstance(record, discord.File):
-        await channel.send(file=record)
-    else:
-        await channel.send(record)
+    try:
+        await channel.send(content)
+    except:
+        record = await miya.record(content)
+        if isinstance(record, discord.File):
+            await channel.send(file=record)
+        else:
+            await channel.send(record)
 
 
 load_modules(miya)
