@@ -120,11 +120,11 @@ class Blacklisting:
         if task == 0:
             await sql(
                 1,
-                f"UPDATE `users` SET `permission` = 'Offender'",
+                f"UPDATE `users` SET `permission` = 'Offender' WHERE `user` = '{user.id}'",
             )
             await self.hook.terminal(
                 1,
-                f"Added Block >\nBlocked - {user.id}\nAdmin - {ctx.author} ({ctx.author.id})\nReason - {reason}",
+                f"Added Block >\nBlocked - {user} ({user.id})\nAdmin - {ctx.author} ({ctx.author.id})\nReason - {reason}",
                 "제한 기록",
                 ctx.bot.user.avatar_url,
             )
@@ -154,7 +154,7 @@ class Blacklisting:
             )
             await self.hook.terminal(
                 1,
-                f"Removed Block >\nUnblocked - {user.id}\nAdmin - {ctx.author} ({ctx.author.id})",
+                f"Removed Block >\nUnblocked - {user} ({user.id})\nAdmin - {ctx.author} ({ctx.author.id})",
                 "제한 기록",
                 ctx.bot.user.avatar_url,
             )
