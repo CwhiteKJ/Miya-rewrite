@@ -10,7 +10,7 @@ from lib.utils import sql
 
 
 class Logger(commands.Cog, name="기록장"):
-    """미야의 이벤트 로그를 남기기 3분 강의"""
+    """미야의 이벤트 로그를 남기기"""
     def __init__(self, bot):
         self.bot = bot
 
@@ -25,6 +25,9 @@ class Logger(commands.Cog, name="기록장"):
     @commands.Cog.listener()
     async def on_message_delete(self, msg):
         if msg.author.bot:
+            return
+
+        if msg.channel.type == discord.ChannelType.private:
             return
 
         files = []
@@ -73,6 +76,9 @@ class Logger(commands.Cog, name="기록장"):
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
         if before.author.bot or after.author.bot:
+            return
+
+        if msg.channel.type == discord.ChannelType.private:
             return
 
         if before.content == after.content:
