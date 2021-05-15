@@ -49,7 +49,7 @@ class Information(commands.Cog, name="정보"):
                     try:
                         webhook = Webhook.from_url(
                             guilds[0][1], adapter=AsyncWebhookAdapter(session))
-                        channel = webhook.channel
+                        channel = ctx.guild.get_channel(int(webhook.channel_id))
                         if channel is not None:
                             logCh = channel.mention
                     except:
