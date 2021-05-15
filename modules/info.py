@@ -35,7 +35,6 @@ class Information(commands.Cog, name="정보"):
                 f"SELECT * FROM `membernoti` WHERE `guild` = '{ctx.guild.id}'")
             muteRole = "설정되어 있지 않아요!"
             memberCh = "설정되어 있지 않아요!"
-            logCh = "설정되어 있지 않아요!"
             if guilds[0][2] != 1234:
                 role = ctx.guild.get_role(int(guilds[0][2]))
                 if role is not None:
@@ -44,16 +43,6 @@ class Information(commands.Cog, name="정보"):
                 channel = ctx.guild.get_channel(int(memberNoti[0][1]))
                 if channel is not None:
                     memberCh = channel.mention
-            if guilds[0][1] != "None":
-                async with aiohttp.ClientSession() as session:
-                    try:
-                        webhook = Webhook.from_url(
-                            guilds[0][1], adapter=AsyncWebhookAdapter(session))
-                        channel = ctx.guild.get_channel(int(webhook.channel_id))
-                        if channel is not None:
-                            logCh = channel.mention
-                    except:
-                        pass
             location = {
                 "amsterdam": "네덜란드 - 암스테르담",
                 "brazil": "브라질",
@@ -96,7 +85,6 @@ class Information(commands.Cog, name="정보"):
                             value="📢 **서버의 연동 설정을 확인하세요!**",
                             inline=False)
             embed.add_field(name="멤버 알림 채널", value=memberCh)
-            embed.add_field(name="로그 채널", value=logCh)
             embed.add_field(name="뮤트 역할", value=muteRole)
             embed.add_field(name="서버 부스트 인원 수",
                             value=f"{len(ctx.guild.premium_subscribers)}명")
