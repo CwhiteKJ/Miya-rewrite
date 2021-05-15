@@ -78,7 +78,7 @@ class Logger(commands.Cog, name="기록장"):
         if before.author.bot or after.author.bot:
             return
 
-        if msg.channel.type == discord.ChannelType.private:
+        if after.channel.type == discord.ChannelType.private:
             return
 
         if before.content == after.content:
