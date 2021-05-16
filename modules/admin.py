@@ -73,6 +73,13 @@ class Administration(commands.Cog, name="디버그"):
             f"🎬 **{user}**의 권한이 업데이트되었어요.\n이전 권한 - `{rows[0][1]}`, 변경된 권한 - `{permission}`"
         )
 
+    @commands.command(name="소유자", hidden=True)
+    @is_manager()
+    async def _check_owner(self, ctx, guild_id: int):
+        guild = self.miya.get_guild(int(guild_id))
+        if guild is not None:
+            await ctx.reply(f"🎬 {guild.name}의 소유자 : **{guild.owner}** ( {guild.owner.id} )")
+
     @commands.command(name="블랙", hidden=True)
     @is_manager()
     async def blacklist_management(
@@ -278,13 +285,18 @@ class Administration(commands.Cog, name="디버그"):
             for row in rows:
                 a += f"{row}\n"
             if len(a) > 1900:
-                await ctx.reply(f"{a[:1900]}\n메시지 길이 제한으로 1900자까지만 출력되었어요.")
-                print(a)
+                await ctx.reply(f"🎬 메시지 길이 제한으로 1900자까지만 출력되었어요. 모든 내용은 <#818512474960691200> 채널을 확인하세요.\n{a[:1900]}")
+                record = await self.miya.record(a)
+                channel = self.miya.get_channel(818512474960691200)
+                if isinstance(record, discord.File):
+                    await channel.send(file=record)
+                else:
+                    await channel.send(record)
             else:
                 await ctx.reply(a)
         elif work == "commit":
             result = await sql(1, cmd)
-            await ctx.reply(result)
+            await ctx.reply(f"🎬 SQL 명령문 실행 결과 : {result}")
         else:
             raise commands.BadArgument
 
