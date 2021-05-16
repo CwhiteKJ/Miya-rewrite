@@ -288,6 +288,72 @@ class Administration(commands.Cog, name="디버그"):
         else:
             raise commands.BadArgument
 
+    @commands.group(name="샤드", hidden=True)
+    @is_owner()
+    async def sharding(self, ctx):
+        """
+        미야야 샤드 < 켜기 / 끄기 / 재시작 > < 샤드 번호 >
+
+
+        미야의 샤드를 관리합니다.
+        """
+        if ctx.invoked_subcommand is None:
+            raise commands.BadArgument
+
+    @sharding.command(name="켜기", hidden=True)
+    @is_owner()
+    async def _turn_on(self, ctx, shard: int):
+        """
+        미야야 샤드 켜기 < 샤드 번호 >
+
+
+        미야의 샤드를 연결합니다.
+        """
+        if shard not in self.miya.shard_ids:
+            raise commands.BadArgument
+
+        sh = self.miya.get_shard(shard)
+        if sh.is_closed():
+            await sh.connect()
+            await ctx.reply(f"🎬 **{shard}**번 샤드를 켰어요.")
+        else:
+            await ctx.reply(f"🎬 **{shard}**번 샤드는 이미 켜져 있어요.")
+    
+    @sharding.command(name="끄기", hideen=True)
+    @is_owner()
+    async def _turn_off(self, ctx, shard: int):
+        """
+        미야야 샤드 끄기 < 샤드 번호 >
+
+
+        미야의 샤드를 연결 해제합니다.
+        """
+        if shard not in self.miya.shard_ids:
+            raise commands.BadArgument
+
+        sh = self.miya.get_shard(shard)
+        if not sh.is_closed():
+            await sh.disconnect()
+            await ctx.reply(f"🎬 **{shard}**번 샤드를 껐어요.")
+        else:
+            await ctx.reply(f"🎬 **{shard}**번 샤드는 이미 꺼져 있어요.")
+
+    @sharding.command(name="재시작", hideen=True)
+    @is_owner()
+    async def _turn_off(self, ctx, shard: int):
+        """
+        미야야 샤드 끄기 < 샤드 번호 >
+
+
+        미야의 샤드를 연결 해제합니다.
+        """
+        if shard not in self.miya.shard_ids:
+            raise commands.BadArgument
+
+        sh = self.miya.get_shard(shard)
+        await sh.reconnect()
+        await ctx.reply(f"🎬 **{shard}**번 샤드를 재시작했어요.")
+
     @commands.command(name="재시작", hidden=True)
     @is_owner()
     async def _restart(self, ctx):

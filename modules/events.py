@@ -41,11 +41,6 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
             "샤드 기록",
             self.miya.user.avatar_url,
         )
-        await self.miya.change_presence(
-            status=discord.Status.idle,
-            activity=discord.Game(f"#{shard} | 미야야 도움말"),
-            shard_id=shard,
-        )
 
     @commands.Cog.listener()
     async def on_shard_connect(self, shard):
@@ -56,8 +51,22 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
             self.miya.user.avatar_url,
         )
         await self.miya.change_presence(
+            status=discord.Status.dnd,
+            activity=discord.Game(f"샤드 #{shard} | 미야가 준비 중이에요.."),
+            shard_id=shard,
+        )
+    
+    @commands.Cog.listener()
+    async def on_shard_ready(self, shard):
+        await self.hook.terminal(
+            0,
+            f"Shard is READY >\nShard ID - #{shard}",
+            "샤드 기록",
+            self.miya.user.avatar_url,
+        )
+        await self.miya.change_presence(
             status=discord.Status.idle,
-            activity=discord.Game(f"#{shard} | 미야야 도움말"),
+            activity=discord.Game(f"샤드 #{shard} | 미야야 도움말"),
             shard_id=shard,
         )
 
