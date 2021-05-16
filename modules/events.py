@@ -55,7 +55,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
             activity=discord.Game(f"샤드 #{shard} | 미야가 준비 중이에요.."),
             shard_id=shard,
         )
-    
+
     @commands.Cog.listener()
     async def on_shard_ready(self, shard):
         await self.hook.terminal(

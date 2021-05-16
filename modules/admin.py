@@ -78,7 +78,9 @@ class Administration(commands.Cog, name="디버그"):
     async def _check_owner(self, ctx, guild_id: int):
         guild = self.miya.get_guild(int(guild_id))
         if guild is not None:
-            await ctx.reply(f"🎬 {guild.name}의 소유자 : **{guild.owner}** ( {guild.owner.id} )")
+            await ctx.reply(
+                f"🎬 {guild.name}의 소유자 : **{guild.owner}** ( {guild.owner.id} )"
+            )
 
     @commands.command(name="블랙", hidden=True)
     @is_manager()
@@ -285,7 +287,9 @@ class Administration(commands.Cog, name="디버그"):
             for row in rows:
                 a += f"{row}\n"
             if len(a) > 1900:
-                await ctx.reply(f"🎬 메시지 길이 제한으로 1900자까지만 출력되었어요. 모든 내용은 <#818512474960691200> 채널을 확인하세요.\n{a[:1900]}")
+                await ctx.reply(
+                    f"🎬 메시지 길이 제한으로 1900자까지만 출력되었어요. 모든 내용은 <#818512474960691200> 채널을 확인하세요.\n{a[:1900]}"
+                )
                 record = await self.miya.record(a)
                 channel = self.miya.get_channel(818512474960691200)
                 if isinstance(record, discord.File):
@@ -330,7 +334,7 @@ class Administration(commands.Cog, name="디버그"):
             await ctx.reply(f"🎬 **{shard}**번 샤드를 켰어요.")
         else:
             await ctx.reply(f"🎬 **{shard}**번 샤드는 이미 켜져 있어요.")
-    
+
     @sharding.command(name="끄기", hideen=True)
     @is_owner()
     async def _turn_off(self, ctx, shard: int):
