@@ -52,7 +52,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
         )
         await self.miya.change_presence(
             status=discord.Status.dnd,
-            activity=discord.Game(f"샤#{shard} | 미야가 준비 중이에요.."),
+            activity=discord.Game(f"#{shard} | 미야가 준비 중이에요.."),
             shard_id=shard,
         )
 
