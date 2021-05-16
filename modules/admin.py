@@ -76,6 +76,12 @@ class Administration(commands.Cog, name="디버그"):
     @commands.command(name="소유자", hidden=True)
     @is_manager()
     async def _check_owner(self, ctx, guild_id: int):
+        """
+        미야야 소유자 < 서버 ID >
+
+
+        지정된 서버의 소유자를 조회해옵니다.
+        """
         guild = self.miya.get_guild(int(guild_id))
         if guild is not None:
             await ctx.reply(
