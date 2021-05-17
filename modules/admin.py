@@ -331,10 +331,10 @@ class Administration(commands.Cog, name="디버그"):
 
         미야의 샤드를 연결합니다.
         """
-        if shard not in self.miya.shard_ids:
+        sh = self.miya.get_shard(shard)
+        if not sh:
             raise commands.BadArgument
 
-        sh = self.miya.get_shard(shard)
         if sh.is_closed():
             await sh.connect()
             await ctx.reply(f"🎬 **{shard}**번 샤드를 켰어요.")
@@ -350,10 +350,10 @@ class Administration(commands.Cog, name="디버그"):
 
         미야의 샤드를 연결 해제합니다.
         """
-        if shard not in self.miya.shard_ids:
+        sh = self.miya.get_shard(shard)
+        if not sh:
             raise commands.BadArgument
 
-        sh = self.miya.get_shard(shard)
         if not sh.is_closed():
             await sh.disconnect()
             await ctx.reply(f"🎬 **{shard}**번 샤드를 껐어요.")
@@ -369,10 +369,10 @@ class Administration(commands.Cog, name="디버그"):
 
         미야의 샤드를 연결 해제합니다.
         """
-        if shard not in self.miya.shard_ids:
+        sh = self.miya.get_shard(shard)
+        if not sh:
             raise commands.BadArgument
 
-        sh = self.miya.get_shard(shard)
         await sh.reconnect()
         await ctx.reply(f"🎬 **{shard}**번 샤드를 재시작했어요.")
 
