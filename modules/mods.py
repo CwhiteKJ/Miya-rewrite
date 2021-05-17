@@ -1,35 +1,37 @@
-import asyncio
 import locale
 import typing
 
 import discord
 from discord.ext import commands
 
-from utils import data
+from lib.utils import sql
 
 locale.setlocale(locale.LC_ALL, "")
 
 
-class Moderation(commands.Cog, name="모드"):
-    def __init__(self, bot):
-        self.bot = bot
+class Moderation(commands.Cog, name="관리"):
+    """쉽고 빠른 ||~~군기 잡기~~|| 유저 관리"""
+    def __init__(self, miya):
+        self.miya = miya
 
     @commands.command(name="뮤트")
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    async def _mute(self,
-                    ctx,
-                    member: discord.Member,
-                    *,
-                    reason: typing.Optional[str] = "사유가 지정되지 않았어요."):
+    async def _mute(
+        self,
+        ctx,
+        member: discord.Member,
+        *,
+        reason: typing.Optional[str] = "사유가 지정되지 않았어요.",
+    ):
         """
         미야야 뮤트 < @유저 > [ 사유 ]
 
 
         지정된 뮤트 역할을 유저에게 적용합니다. 뮤트 역할의 설정이 필요합니다.
         """
-        rows = await data.fetch(
-            f"SELECT * FROM `guilds` WHERE `guild` = '{ctx.guild.id}'")
+        rows = await sql(
+            0, f"SELECT * FROM `guilds` WHERE `guild` = '{ctx.guild.id}'")
         role = ctx.guild.get_role(int(rows[0][2]))
         if role is not None and role < ctx.guild.me.top_role:
             if role not in member.roles:
@@ -53,19 +55,21 @@ class Moderation(commands.Cog, name="모드"):
     @commands.command(name="언뮤트")
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    async def _unmute(self,
-                      ctx,
-                      member: discord.Member,
-                      *,
-                      reason: typing.Optional[str] = "사유가 지정되지 않았어요."):
+    async def _unmute(
+        self,
+        ctx,
+        member: discord.Member,
+        *,
+        reason: typing.Optional[str] = "사유가 지정되지 않았어요.",
+    ):
         """
         미야야 언뮤트 < @유저 > [ 사유 ]
 
 
         유저의 뮤트 상태를 해제합니다. 뮤트 역할의 설정이 필요합니다.
         """
-        rows = await data.fetch(
-            f"SELECT * FROM `guilds` WHERE `guild` = '{ctx.guild.id}'")
+        rows = await sql(
+            0, f"SELECT * FROM `guilds` WHERE `guild` = '{ctx.guild.id}'")
         role = ctx.guild.get_role(int(rows[0][2]))
         if role is not None and role < ctx.guild.me.top_role:
             if role in member.roles:
@@ -106,11 +110,13 @@ class Moderation(commands.Cog, name="모드"):
     @commands.command(name="추방", aliases=["킥"])
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(kick_members=True)
-    async def _kick(self,
-                    ctx,
-                    member: discord.Member,
-                    *,
-                    reason: typing.Optional[str] = "사유가 지정되지 않았어요."):
+    async def _kick(
+        self,
+        ctx,
+        member: discord.Member,
+        *,
+        reason: typing.Optional[str] = "사유가 지정되지 않았어요.",
+    ):
         """
         미야야 추방 < 유저 > [ 사유 ]
 

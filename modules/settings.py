@@ -1,18 +1,78 @@
+import asyncio
 import locale
 
 import discord
 from discord.ext import commands
 
 from lib import config
-from utils import data
-from utils import webhook
+from lib.utils import sql
 
 locale.setlocale(locale.LC_ALL, "")
 
 
 class Settings(commands.Cog, name="설정"):
+    """이것저것 조율하며 미야를 더 효율적으로"""
     def __init__(self, miya):
         self.miya = miya
+
+    @commands.command(name="가입", aliases=["등록"])
+    async def _register(self, ctx):
+        """
+        미야야 가입
+
+
+        미야의 서비스에 이용 약관을 동의하고 등록합니다.
+        """
+        rows = await sql(
+            0, f"SELECT * FROM `users` WHERE `user` = '{ctx.author.id}'")
+        if rows and rows[0][1] == "User":
+            await ctx.reply(
+                f"<:cs_id:659355469034422282> 이미 등록되어 있는 유저에요.\n등록되지 않았는데 이 문구가 뜬다면 https://discord.gg/tu4NKbEEnn 로 문의해주세요."
+            )
+        else:
+            embed = discord.Embed(
+                title="미야 이용 약관에 동의하시겠어요?",
+                description=
+                "`미야`의 서비스를 사용하시려면 이용약관에 동의해야 해요.\n`동의합니다`를 입력하여 이용 약관에 동의하실 수 있어요!\n \n[이용 약관](http://miya.kro.kr/tos)\n[개인정보보호방침](http://miya.kro.kr/privacy)",
+                color=0x5FE9FF,
+            )
+            embed.set_author(name="서비스 등록", icon_url=self.miya.user.avatar_url)
+            register_msg = await ctx.reply(embed=embed)
+            async with ctx.channel.typing():
+
+                def check(msg):
+                    return (msg.channel == ctx.channel
+                            and msg.author == ctx.author
+                            and msg.content == "동의합니다")
+
+                try:
+                    msg = await self.miya.wait_for("message",
+                                                   timeout=180,
+                                                   check=check)
+                except asyncio.TimeoutError:
+                    fail_embed = discord.Embed(
+                        description="미야 이용약관 동의에 시간이 너무 오래 걸려 취소되었어요.",
+                        color=0xFF0000)
+                    await register_msg.edit(embed=fail_embed, delete_after=5)
+                else:
+                    try:
+                        await msg.delete()
+                    except:
+                        pass
+                    await register_msg.delete()
+                    if not rows:
+                        await sql(
+                            1,
+                            f"INSERT INTO `users`(`user`, `permission`, `money`) VALUES('{ctx.author.id}', 'User', '500')",
+                        )
+                    elif rows[0][1] == "Stranger":
+                        await sql(
+                            1,
+                            f"UPDATE `users` SET `permission` = 'User' WHERE `user` = '{ctx.author.id}'",
+                        )
+                    await ctx.reply(
+                        f"<:cs_yes:659355468715786262> 가입 절차가 모두 완료되었어요! 이제 미야와 대화하실 수 있어요."
+                    )
 
     @commands.command(name="뮤트설정")
     @commands.has_permissions(administrator=True)
@@ -32,8 +92,9 @@ class Settings(commands.Cog, name="설정"):
             )
         else:
             async with ctx.channel.typing():
-                result = await data.commit(
-                    f"UPDATE `guilds` SET `muteRole` = '{role.id}' WHERE `guild` = '{ctx.guild.id}'"
+                result = await sql(
+                    1,
+                    f"UPDATE `guilds` SET `muteRole` = '{role.id}' WHERE `guild` = '{ctx.guild.id}'",
                 )
                 if result == "SUCCESS":
                     for channel in ctx.guild.text_channels:
@@ -63,15 +124,6 @@ class Settings(commands.Cog, name="설정"):
                                                        reason="뮤트 역할 설정")
                     await ctx.reply(
                         f"<:cs_settings:659355468992610304> 뮤트 역할을 `{role.name}` 역할로 설정했어요.\n \n*관리자 권한을 가진 유저 및 권한 설정을 통해 메시지 보내기 권한을 승인받은 유저는 뮤트가 적용되지 않아요.*"
-                    )
-                else:
-                    await webhook.terminal(
-                        f"Mute Update Failed >\nSQL Result - {result}",
-                        "명령어 처리 기록",
-                        self.miya.user.avatar_url,
-                    )
-                    await ctx.reply(
-                        f":warning: 명령어 실행 도중 오류가 발생했어요.\n오류 해결을 위해 Discord 지원 서버로 문의해주세요. https://discord.gg/tu4NKbEEnn"
                     )
 
     @commands.command(name="채널설정")
@@ -105,82 +157,57 @@ class Settings(commands.Cog, name="설정"):
                         await ctx.reply(
                             f"<:cs_settings:659355468992610304> {channel.mention} 채널에 미야 지원 서버의 공지 채널을 팔로우했어요.\n \n*미야의 공지를 더 이상 받고 싶지 않다면 서버의 연동 설정에서 팔로우를 취소해주세요!*"
                         )
+            elif what == "로그":
+                webhook = await channel.create_webhook(name="미야 로그",
+                                                       reason="미야 로그 설정")
+                await sql(
+                    1,
+                    f"UPDATE `guilds` SET `eventLog` = '{webhook.url}' WHERE `guild` = '{ctx.guild.id}'",
+                )
+                await ctx.reply(
+                    f"<:cs_settings:659355468992610304> {channel.mention} 채널에 미야 기록용 웹훅을 새롭게 추가했어요."
+                )
+            elif what == "입퇴장":
+                await sql(
+                    1,
+                    f"UPDATE `membernoti` SET `channel` = '{channel.id}' WHERE `guild` = '{ctx.guild.id}'",
+                )
+                await ctx.reply(
+                    f"<:cs_settings:659355468992610304> {channel.mention} 채널로 멤버 입퇴장 기록 채널을 변경했어요."
+                )
             else:
-                if what == "로그":
-                    table = "guilds"
-                    value = "eventLog"
-                elif what == "입퇴장":
-                    table = "memberNoti"
-                    value = "channel"
-                if value is not None and table is not None:
-                    result = await data.commit(
-                        f"UPDATE `{table}` SET `{value}` = '{channel.id}' WHERE `guild` = '{ctx.guild.id}'"
-                    )
-                    if result == "SUCCESS":
-                        await ctx.reply(
-                            f"<:cs_settings:659355468992610304> {what} 채널을 {channel.mention} 채널로 설정했어요."
-                        )
-                    else:
-                        await webhook.terminal(
-                            f"Channel Update Failed >\nSQL Result - {result}",
-                            "명령어 처리 기록",
-                            self.miya.user.avatar_url,
-                        )
-                        await ctx.reply(
-                            f":warning: 명령어 실행 도중 오류가 발생했어요.\n오류 해결을 위해 Discord 지원 서버로 문의해주세요. https://discord.gg/tu4NKbEEnn"
-                        )
-                else:
-                    raise commands.BadArgument
+                raise commands.BadArgument
 
-    @commands.command(name="링크차단")
+    @commands.command(name="링크차단", aliases=["필터링"])
     @commands.has_permissions(manage_guild=True)
-    async def link_set(self, ctx, *args):
+    async def link_set(self, ctx, what):
         """
-        미야야 링크차단 < 켜기 / 끄기 >
+        미야야 필터링 < 켜기 / 끄기 >
 
 
         서버 내에서 Discord 초대 링크를 승인할 지 삭제할 지 설정합니다.
-        *채널 주제에 `=무시`라는 단어를 넣어 해당 채널만 무시할 수 있습니다.*
+        *채널 주제에 `=무시`라는 단어를 넣어 특정 채널만 무시할 수 있습니다.*
         """
-        if not args:
-            raise commands.BadArgument
-        else:
-            async with ctx.channel.typing():
-                if args[0] == "켜기":
-                    result = await data.commit(
-                        f"UPDATE `guilds` SET `linkFiltering` = 'true' WHERE `guild` = '{ctx.guild.id}'"
+        async with ctx.channel.typing():
+            if what == "켜기":
+                result = await sql(
+                    1,
+                    f"UPDATE `guilds` SET `linkFiltering` = 'true' WHERE `guild` = '{ctx.guild.id}'",
+                )
+                if result == "SUCCESS":
+                    await ctx.reply(
+                        f"<:cs_on:659355468682231810> 링크 차단 기능을 활성화했어요!\n특정 채널에서만 이 기능을 끄고 싶으시다면 채널 주제에 `=무시`라는 단어를 넣어주세요."
                     )
-                    if result == "SUCCESS":
-                        await ctx.reply(
-                            f"<:cs_on:659355468682231810> 링크 차단 기능을 활성화했어요!\n특정 채널에서만 이 기능을 끄고 싶으시다면 채널 주제에 `=무시`라는 단어를 넣어주세요."
-                        )
-                    else:
-                        await webhook.terminal(
-                            f"Filter Update Failed >\nSQL Result - {result}",
-                            "명령어 처리 기록",
-                            self.miya.user.avatar_url,
-                        )
-                        await ctx.reply(
-                            f":warning: 명령어 실행 도중 오류가 발생했어요.\n오류 해결을 위해 Discord 지원 서버로 문의해주세요. https://discord.gg/tu4NKbEEnn"
-                        )
-                elif args[0] == "끄기":
-                    result = await data.commit(
-                        f"UPDATE `guilds` SET `linkFiltering` = 'false' WHERE `guild` = '{ctx.guild.id}'"
-                    )
-                    if result == "SUCCESS":
-                        await ctx.reply(
-                            f"<:cs_off:659355468887490560> 링크 차단 기능을 비활성화했어요!")
-                    else:
-                        await webhook.terminal(
-                            f"Filter Update Failed >\nSQL Result - {result}",
-                            "명령어 처리 기록",
-                            self.miya.user.avatar_url,
-                        )
-                        await ctx.reply(
-                            f":warning: 명령어 실행 도중 오류가 발생했어요.\n오류 해결을 위해 Discord 지원 서버로 문의해주세요. https://discord.gg/tu4NKbEEnn"
-                        )
-                else:
-                    raise commands.BadArgument
+            elif what == "끄기":
+                result = await sql(
+                    1,
+                    f"UPDATE `guilds` SET `linkFiltering` = 'false' WHERE `guild` = '{ctx.guild.id}'",
+                )
+                if result == "SUCCESS":
+                    await ctx.reply(
+                        f"<:cs_off:659355468887490560> 링크 차단 기능을 비활성화했어요!")
+            else:
+                raise commands.BadArgument
 
     @commands.command(name="메시지설정", aliases=["메세지설정"])
     @commands.has_permissions(manage_guild=True)
@@ -200,8 +227,9 @@ class Settings(commands.Cog, name="설정"):
             elif name == "퇴장":
                 value = "remove_msg"
             if value is not None:
-                result = await data.commit(
-                    f"UPDATE `membernoti` SET `{value}` = '{message}' WHERE `guild` = '{ctx.guild.id}'"
+                result = await sql(
+                    1,
+                    f"UPDATE `membernoti` SET `{value}` = '{message}' WHERE `guild` = '{ctx.guild.id}'",
                 )
                 if result == "SUCCESS":
                     a = message.replace("{member}", str(ctx.author.mention))
@@ -209,15 +237,6 @@ class Settings(commands.Cog, name="설정"):
                     a = a.replace("{count}", str(ctx.guild.member_count))
                     await ctx.reply(
                         f"<:cs_settings:659355468992610304> {name} 메시지를 성공적으로 변경했어요!\n이제 유저가 {name} 시 채널에 이렇게 표시될 거에요. : \n{a}"
-                    )
-                else:
-                    await webhook.terminal(
-                        f"Message Update Failed >\nSQL Result - {result}",
-                        "명령어 처리 기록",
-                        self.miya.user.avatar_url,
-                    )
-                    await ctx.reply(
-                        f":warning: 명령어 실행 도중 오류가 발생했어요.\n오류 해결을 위해 Discord 지원 서버로 문의해주세요. https://discord.gg/tu4NKbEEnn"
                     )
             else:
                 raise commands.BadArgument

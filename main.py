@@ -1,14 +1,17 @@
-import datetime
+import io
 import locale
+import sys
+import traceback
 
+import aiohttp
 import discord
 import koreanbots
 from discord.ext import commands
-from pytz import timezone
-from pytz import utc
 
 from lib import config
-from utils import get
+from lib import utils
+
+Check = utils.Check()
 
 locale.setlocale(locale.LC_ALL, "")
 
@@ -28,6 +31,18 @@ class Miya(commands.AutoShardedBot):
                 index = data.index("미야")
                 result = 9 * (num - 1) + (index + 1)
                 return result
+
+    async def record(self, content):
+        try:
+            payload = content.encode("utf-8")
+            async with aiohttp.ClientSession(raise_for_status=True) as cs:
+                async with cs.post("https://hastebin.com/documents",
+                                   data=payload) as r:
+                    post = await r.json()
+                    uri = post["key"]
+                    return f"https://hastebin.com/{uri}"
+        except aiohttp.ClientResponseError:
+            return discord.File(io.StringIO(content), filename="Traceback.txt")
 
 
 intents = discord.Intents(
@@ -57,14 +72,15 @@ miya = Miya(
 def load_modules(miya):
     failed = []
     exts = [
+        "modules.info",
         "modules.general",
-        "modules.events",
         "modules.settings",
         "modules.admin",
         "modules.mods",
-        "modules.register",
-        "modules.log",
+        "modules.cc",
         "modules.eco",
+        "modules.events",
+        "modules.log",
         "jishaku",
     ]
 
@@ -80,8 +96,23 @@ def load_modules(miya):
 
 @miya.check
 async def process(ctx):
-    p = await get.check(ctx, miya)
+    p = await Check.identify(ctx)
     return p
+
+
+@miya.event
+async def on_error(event, *args, **kwargs):
+    s = traceback.format_exc()
+    content = f"{event}에 발생한 예외를 무시합니다;\n{s}"
+    channel = miya.get_channel(config.Debug)
+    try:
+        await channel.send(content)
+    except:
+        record = await miya.record(content)
+        if isinstance(record, discord.File):
+            await channel.send(file=record)
+        else:
+            await channel.send(record)
 
 
 load_modules(miya)
