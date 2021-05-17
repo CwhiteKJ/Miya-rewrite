@@ -317,9 +317,11 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                         "서버 입퇴장 기록",
                         self.miya.user.avatar_url,
                     )
-        users = await sql(
+        user = await sql(
             0, f"SELECT * FROM `users` WHERE `user` = '{guild.owner.id}'")
-        if users[0][1] == "Blocked":
+        if not user:
+            return
+        elif user[0][1] == "Offender":
             try:
                 await guild.owner.send(
                     f"<a:ban_guy:761149578216603668> 현재 {guild.name} 서버는 미야 이용이 제한되었어요, 자세한 내용은 `미야야 문의`를 사용해 문의해주세요.",
