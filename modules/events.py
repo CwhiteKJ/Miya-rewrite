@@ -318,7 +318,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                         self.miya.user.avatar_url,
                     )
         user = await sql(
-            0, f"SELECT * FROM `users` WHERE `user` = '{ctx.author.id}'")
+            0, f"SELECT * FROM `users` WHERE `user` = '{guild.owner.id}'")
         if not user:
             return
         elif user[0][1] == "Offender":
