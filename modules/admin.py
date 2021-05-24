@@ -341,7 +341,7 @@ class Administration(commands.Cog, name="디버그"):
         else:
             await ctx.reply(f"🎬 **{shard}**번 샤드는 이미 켜져 있어요.")
 
-    @sharding.command(name="끄기", hideen=True)
+    @sharding.command(name="끄기", hidden=True)
     @is_owner()
     async def _turn_off(self, ctx, shard: int):
         """
@@ -360,14 +360,14 @@ class Administration(commands.Cog, name="디버그"):
         else:
             await ctx.reply(f"🎬 **{shard}**번 샤드는 이미 꺼져 있어요.")
 
-    @sharding.command(name="재시작", hideen=True)
+    @sharding.command(name="재시작", hidden=True)
     @is_owner()
     async def _turn_off(self, ctx, shard: int):
         """
-        미야야 샤드 끄기 < 샤드 번호 >
+        미야야 샤드 재시작 < 샤드 번호 >
 
 
-        미야의 샤드를 연결 해제합니다.
+        미야의 샤드를 연결 해제한 후 다시 연결합니다.
         """
         sh = self.miya.get_shard(shard)
         if not sh:
