@@ -106,7 +106,7 @@ async def on_error(event, *args, **kwargs):
     content = f"{event}에 발생한 예외를 무시합니다;\n{s}"
     channel = miya.get_channel(config.Debug)
     try:
-        await channel.send(f"{content}")
+        await channel.send(f"```{content}```")
     except:
         record = await miya.record(content)
         if isinstance(record, discord.File):
