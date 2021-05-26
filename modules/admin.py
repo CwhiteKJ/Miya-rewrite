@@ -135,13 +135,37 @@ class Administration(commands.Cog, name="디버그"):
     @is_manager()
     async def checkout(self, ctx):
         """
-        미야야 조회 < 유저 / 단어 > < 조회할 값 >
+        미야야 조회 < 유저 / 단어 / 고유 > < 조회할 값 >
 
 
-        유저 ID 혹은 단어에 대해서 미야가 알고 있는 내용을 조회합니다.
+        값에 대해서 미야가 알고 있는 내용을 조회합니다.
         """
         if ctx.invoked_subcommand is None:
             raise commands.BadArgument
+
+    @checkout.command(name="고유", hidden=True)
+    @is_manager()
+    async def _primary(self, ctx, number: int):
+        """
+        미야야 조회 고유 < 고유 번호 >
+
+
+        고유 번호를 조회해 단어의 정보를 확인합니다.
+        """
+        rows = await sql(
+            0,
+            f"SELECT * FROM `cc` WHERE `no` = '{number}'")
+        embed = discord.Embed(
+            title=f"{number} 고유 번호 조회 결과",
+            color=0x5FE9FF,
+            timestamp=datetime.datetime.utcnow(),
+        )
+        embed.add_field(name="입력 내용", value=rows[i][1], inline=False)
+        embed.add_field(name="답장 내용", value=rows[i][2], inline=False)
+        embed.add_field(name="가르친 유저의 ID", value=rows[i][3], inline=False)
+        embed.add_field(name="비활성화되었나요?", value=rows[i][4], inline=False)
+        embed.set_author(name="커맨드 목록", icon_url=self.miya.user.avatar_url)
+        await ctx.send(embed=embed)
 
     @checkout.command(name="유저", hidden=True)
     @is_manager()
