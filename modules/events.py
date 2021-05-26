@@ -225,7 +225,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
             lines = f"{ctx.command}에 발생한 예외를 무시합니다;\n{lines}"
             channel = self.miya.get_channel(config.Debug)
             try:
-                await channel.send(lines)
+                await channel.send(f"{lines}")
             except:
                 record = await self.miya.record(lines)
                 if isinstance(record, discord.File):
@@ -239,7 +239,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                 self.miya.user.avatar_url,
             )
             await ctx.reply(
-                f":warning: 명령어 실행 도중 오류가 발생했어요.\n이 오류가 지속된다면 `미야야 문의`를 사용해 문의해주세요."
+                f":warning: 명령어 실행 도중 오류가 발생했어요.\n이 오류가 지속된다면 `미야야 문의` 를 사용해 문의해주세요."
             )
 
     @commands.Cog.listener()
