@@ -1,6 +1,5 @@
 pytz
-discord.py[voice] >= 1.6.0
-aiohttp
+discord.py[voice] >= 1.7.0
 bs4
 lxml
 koreanbots
