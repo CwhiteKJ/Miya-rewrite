@@ -140,7 +140,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                                     embed = discord.Embed(
                                         title=msg,
                                         description=
-                                        f"[Discord 지원 서버 접속하기](https://discord.gg/tu4NKbEEnn)\n[한국 디스코드 봇 리스트 하트 누르기](https://koreanbots.dev/bots/720724942873821316)",
+                                        f"[Discord 지원 서버 접속하기](https://discord.gg/J4jSUTwgd3)\n[한국 디스코드 봇 리스트 하트 누르기](https://koreanbots.dev/bots/720724942873821316)",
                                         color=0x5FE9FF,
                                     )
                                     embed.set_footer(
@@ -164,7 +164,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                         embed = discord.Embed(
                             title=row[2],
                             description=
-                            f"[Discord 지원 서버 접속하기](https://discord.gg/tu4NKbEEnn)\n[한국 디스코드 봇 리스트 하트 누르기](https://koreanbots.dev/bots/720724942873821316)",
+                            f"[Discord 지원 서버 접속하기](https://discord.gg/J4jSUTwgd3)\n[한국 디스코드 봇 리스트 하트 누르기](https://koreanbots.dev/bots/720724942873821316)",
                             color=0x5FE9FF,
                         )
                         embed.set_footer(
@@ -239,7 +239,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                 self.miya.user.avatar_url,
             )
             await ctx.reply(
-                f":warning: 명령어 실행 도중 오류가 발생했어요.\n이 오류가 지속된다면 `미야야 문의` 를 사용해 문의해주세요."
+                f":warning: 명령어 실행 도중 오류가 발생했어요.\n계속해서 오류가 발생하면 `미야야 문의` 명령어를 사용해 문의해주세요."
             )
 
     @commands.Cog.listener()
@@ -298,7 +298,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
                         title="미야를 초대해주셔서 감사해요!",
                         description="""
 `미야야 채널설정 공지 #채널` 명령어를 사용해 공지 채널을 설정해주세요.
-미야에 관련된 문의 사항은 [지원 서버](https://discord.gg/tu4NKbEEnn)에서 하실 수 있어요!
+미야에 관련된 문의 사항은 [지원 서버](https://discord.gg/J4jSUTwgd3)에서 하실 수 있어요!
 미야의 더욱 다양한 명령어는 `미야야 도움말` 명령어로 살펴보세요!
                         """,
                         timestamp=datetime.datetime.utcnow(),
@@ -324,7 +324,7 @@ class Listeners(commands.Cog, name="이벤트 리스너"):
         elif user[0][1] == "Offender":
             try:
                 await guild.owner.send(
-                    f"<a:ban_guy:761149578216603668> 현재 {guild.name} 서버는 미야 이용이 제한되었어요, 자세한 내용은 `미야야 문의`를 사용해 문의해주세요.",
+                    f"<a:ban_guy:761149578216603668> 현재 {guild.name} 서버는 미야 이용이 제한되었어요, 자세한 내용은 `미야야 문의` 명령어를 사용해 문의해주세요.",
                 )
             except:
                 await self.hook.terminal(
