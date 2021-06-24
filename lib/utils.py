@@ -17,7 +17,7 @@ from lib import config
 class Forbidden(commands.CheckFailure):
     def __init__(self):
         super().__init__(
-            "<a:ban_guy:761149578216603668> 현재 미야 이용이 제한되셨어요, 자세한 내용은 `미야야 문의`를 사용해 문의해주세요."
+            "<a:ban_guy:761149578216603668> 현재 미야 이용이 제한되셨어요, 자세한 내용은 `미야야 문의` 명령어를 사용해 문의해주세요."
         )
 
 
@@ -132,7 +132,7 @@ class Blacklisting:
                 embed = discord.Embed(
                     title=f"이런, {user}님은 이용이 제한되셨어요.",
                     description=f"""
-자세한 내용은 `미야야 문의`를 사용해 문의해주세요.
+자세한 내용은 `미야야 문의` 명령어를 사용해 문의해주세요.
 사유 : {reason}
 관리자 : {ctx.author}
 차단 시각 : {time}
